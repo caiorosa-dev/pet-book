@@ -6,6 +6,7 @@ import { useRouter } from "next/navigation"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
+import { authClient } from "@/lib/auth-client"
 
 export default function RegisterPage() {
   const router = useRouter()
@@ -15,38 +16,30 @@ export default function RegisterPage() {
   const [error, setError] = useState<string | null>(null)
   const [isLoading, setIsLoading] = useState(false)
 
-  const handleSubmit = async (e: React.FormEvent) => {
+  async function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault()
     setError(null)
     setIsLoading(true)
 
-    try {
-      const response = await fetch("/api/register", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
+    await authClient.signUp.email(
+      {
+        email,
+        password,
+        name,
+        callbackURL: "/dashboard"
+      },
+      {
+        onRequest: () => setIsLoading(true),
+        onSuccess: () => {
+          setIsLoading(false)
+          router.push("/login?registered=true")
         },
-        body: JSON.stringify({
-          name,
-          email,
-          password,
-        }),
-      })
-
-      const data = await response.json()
-
-      if (!response.ok) {
-        setError(data.error || "Something went wrong")
-        setIsLoading(false)
-        return
+        onError: (ctx) => {
+          setIsLoading(false)
+          setError(ctx.error?.message || "Something went wrong. Please try again.")
+        }
       }
-
-      // Redirect to login page on successful registration
-      router.push("/login?registered=true")
-    } catch (error) {
-      setError("Something went wrong. Please try again.")
-      setIsLoading(false)
-    }
+    )
   }
 
   return (
@@ -69,7 +62,7 @@ export default function RegisterPage() {
                 autoComplete="name"
                 placeholder="Your name"
                 value={name}
-                onChange={(e) => setName(e.target.value)}
+                onChange={e => setName(e.target.value)}
               />
             </div>
             <div className="space-y-2">
@@ -82,7 +75,7 @@ export default function RegisterPage() {
                 required
                 placeholder="name@example.com"
                 value={email}
-                onChange={(e) => setEmail(e.target.value)}
+                onChange={e => setEmail(e.target.value)}
               />
             </div>
             <div className="space-y-2">
@@ -94,7 +87,7 @@ export default function RegisterPage() {
                 autoComplete="new-password"
                 required
                 value={password}
-                onChange={(e) => setPassword(e.target.value)}
+                onChange={e => setPassword(e.target.value)}
               />
             </div>
           </div>
@@ -121,4 +114,4 @@ export default function RegisterPage() {
       </div>
     </div>
   )
-} 
+}
