@@ -1,17 +1,24 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+ # Pet Book
+
+ This is a [Next.js](https://nextjs.org) project for managing pet information and profiles. Pet Book allows users to create profiles for their pets, track health records, schedule appointments, and connect with other pet owners.
+
+ ## Overview
+
+ Pet Book is built with Next.js 15, React 19, TypeScript, Tailwind CSS, and Shadcn UI components. It uses Prisma with a PostgreSQL database for data storage.
+
 
 ## Getting Started
 
-First, run the development server:
+First, run the setup:
 
 ```bash
-npm run dev
-# or
+yarn setup
+```
+
+Then, run the development server:
+
+```bash
 yarn dev
-# or
-pnpm dev
-# or
-bun dev
 ```
 
 Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
