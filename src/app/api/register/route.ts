@@ -1,6 +1,7 @@
-import { NextResponse } from "next/server"
-import { hash } from "bcrypt"
-import { prisma } from "@/lib/prisma"
+import { hash } from 'bcrypt'
+import { NextResponse } from 'next/server'
+
+import { prisma } from '@/lib/prisma'
 
 export async function POST(request: Request) {
   try {
@@ -10,20 +11,20 @@ export async function POST(request: Request) {
     // Validate required fields
     if (!email || !password) {
       return NextResponse.json(
-        { error: "Email and password are required" },
-        { status: 400 }
+        { error: 'Email and password are required' },
+        { status: 400 },
       )
     }
 
     // Check if user already exists
     const existingUser = await prisma.user.findUnique({
-      where: { email }
+      where: { email },
     })
 
     if (existingUser) {
       return NextResponse.json(
-        { error: "User with this email already exists" },
-        { status: 409 }
+        { error: 'User with this email already exists' },
+        { status: 409 },
       )
     }
 
@@ -41,16 +42,16 @@ export async function POST(request: Request) {
 
     // Return user without password
     const { password: _, ...userWithoutPassword } = user
-    
+
     return NextResponse.json(
-      { message: "User registered successfully", user: userWithoutPassword },
-      { status: 201 }
+      { message: 'User registered successfully', user: userWithoutPassword },
+      { status: 201 },
     )
   } catch (error) {
-    console.error("Registration error:", error)
+    console.error('Registration error:', error)
     return NextResponse.json(
-      { error: "An error occurred during registration" },
-      { status: 500 }
+      { error: 'An error occurred during registration' },
+      { status: 500 },
     )
   }
-} 
+}
