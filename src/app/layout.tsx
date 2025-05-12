@@ -25,9 +25,7 @@ export default function RootLayout({
         className={`${interFont.variable} antialiased`}
       >
         <LaunchScreen />
-        <FullScreenPage className='flex justify-center items-center'>
-          {children}
-        </FullScreenPage>
+        {children}
       </body>
     </html>
   );
