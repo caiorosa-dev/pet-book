@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { Inter } from "next/font/google";
 import "./globals.css";
+import { FullScreenPage } from '@/components/layout/full-screen-page';
 
 const interFont = Inter({
   variable: "--font-inter",
@@ -22,7 +23,9 @@ export default function RootLayout({
       <body
         className={`${interFont.variable} antialiased`}
       >
-        {children}
+        <FullScreenPage className='flex justify-center items-center'>
+          {children}
+        </FullScreenPage>
       </body>
     </html>
   );
