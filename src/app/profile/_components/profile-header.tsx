@@ -8,7 +8,7 @@ export default function ProfileHeader() {
         <div className="flex flex-col items-center justify-center">
           <Avatar className="w-24 h-24">
             <AvatarImage
-              src={"https://randomuser.me/api/portraits/men/31.jpg"}
+              src={"https://randomuser.me/api/portraits/men/69.jpg"}
             />
           </Avatar>
         </div>
