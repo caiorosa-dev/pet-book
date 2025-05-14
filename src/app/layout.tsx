@@ -3,7 +3,6 @@ import './globals.css'
 import type { Metadata } from 'next'
 import { Inter } from 'next/font/google'
 
-import { FullScreenPage } from '@/components/layout/full-screen-page'
 import { LaunchScreen } from '@/components/misc/launch-screen'
 
 const interFont = Inter({

@@ -9,23 +9,22 @@
 
 ## Getting Started
 
-First, run the setup:
+1. **Start the database**
+   ```bash
+   docker compose up -d
+   ```
 
-```bash
-yarn setup
-```
+2. **Setup the project**
+   ```bash
+   yarn setup
+   ```
 
-Then, run the development server:
+3. **Run development server**
+   ```bash
+   yarn dev
+   ```
 
-```bash
-yarn dev
-```
-
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
-
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
-
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+Visit [http://localhost:3000](http://localhost:3000) to view the application. The site auto-updates as you edit files.
 
 ## Learn More
 

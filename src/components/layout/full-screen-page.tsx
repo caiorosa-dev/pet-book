@@ -11,7 +11,7 @@ export function FullScreenPage({
     <main
       className={cn(
         'w-full min-h-screen h-full',
-        inApp && 'grid grid-rows-[1fr_auto]',
+        inApp && 'grid grid-rows-[auto_1fr]',
         className,
       )}
     >
