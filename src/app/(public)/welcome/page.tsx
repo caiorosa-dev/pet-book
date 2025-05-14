@@ -1,6 +1,5 @@
 import Link from 'next/link'
 
-import { Logo } from '@/components/misc/logo'
 import { Button } from '@/components/ui/button'
 import {
   Carousel,
@@ -15,7 +14,6 @@ import WelcomeCarouselItem from './_components/welcome-carousel-item'
 export default function Home() {
   return (
     <>
-      <Logo className="absolute top-12 left-1/2 -translate-x-1/2" />
       <div className="max-w-xl w-full py-12 px-4 mt-4">
         <Carousel>
           <CarouselContent>
@@ -56,7 +54,7 @@ export default function Home() {
             </CarouselControlledShowComponent>
             <CarouselControlledShowComponent last={true}>
               <Link href="/login" className="w-full">
-                <Button variant="secondary" className="w-full" size="rounded">
+                <Button variant="muted" className="w-full" size="rounded">
                   Já tenho uma conta
                 </Button>
               </Link>

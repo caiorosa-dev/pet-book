@@ -43,7 +43,7 @@ export default function RegisterPage() {
         email,
         password,
         name,
-        callbackURL: '/dashboard',
+        callbackURL: '/',
       },
       {
         onRequest: () => setIsLoading(true),
