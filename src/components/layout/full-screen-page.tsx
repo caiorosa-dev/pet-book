@@ -1,5 +1,6 @@
-import { cn } from "@/lib/utils";
-import { PropsWithChildren } from "react";
+import { PropsWithChildren } from 'react'
+
+import { cn } from '@/lib/utils'
 
 export function FullScreenPage({
   children,
@@ -9,12 +10,12 @@ export function FullScreenPage({
   return (
     <main
       className={cn(
-        "w-full min-h-screen h-full",
-        inApp && "grid grid-rows-[1fr_auto]",
+        'w-full min-h-screen h-full',
+        inApp && 'grid grid-rows-[1fr_auto]',
         className,
       )}
     >
       {children}
     </main>
-  );
+  )
 }
