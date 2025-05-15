@@ -2,141 +2,243 @@
 
 import { AtSignIcon, PhoneIcon, UserIcon } from 'lucide-react'
 import Link from 'next/link'
-import { useRouter } from 'next/navigation'
 import { useEffect, useState } from 'react'
+import { z } from 'zod'
 
 import { Button } from '@/components/ui/button'
+import {
+  Form,
+  FormControl,
+  FormField,
+  FormItem,
+  FormLabel,
+  FormMessage,
+} from '@/components/ui/form'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
+import { useClientForm } from '@/hooks/use-client-form'
 import { authClient } from '@/lib/auth-client'
 
+const registerSchema = z
+  .object({
+    name: z.string().min(1, 'Nome é obrigatório'),
+    username: z.string().min(1, 'Nome de usuário é obrigatório'),
+    phone: z.string().min(1, 'Telefone é obrigatório'),
+    email: z.string().email('Email inválido'),
+    password: z.string().min(6, 'Senha deve ter no mínimo 6 caracteres'),
+    confirmPassword: z.string().min(6, 'Confirmação de senha é obrigatória'),
+  })
+  .refine((data) => data.password === data.confirmPassword, {
+    message: 'As senhas não conferem',
+    path: ['confirmPassword'],
+  })
+
 export default function RegisterPage() {
-  const router = useRouter()
-  const [name, setName] = useState('')
-  const [email, setEmail] = useState('')
-  const [password, setPassword] = useState('')
-  const [error, setError] = useState<string | null>(null)
-  const [isLoading, setIsLoading] = useState(false)
+  const [step, setStep] = useState(1)
 
-  // Generate username from name
-  useEffect(() => {
-    if (name) {
-      // Convert name to lowercase, remove special chars, replace spaces with dots
-      const generatedUsername = name
-        .toLowerCase()
-        .normalize('NFD')
-        .replace(/[\u0300-\u036f]/g, '') // Remove accents
-        .replace(/[^\w\s]/gi, '') // Remove special characters
-        .replace(/\s+/g, '.') // Replace spaces with dots
-
-      setEmail(generatedUsername)
-    }
-  }, [name])
-
-  async function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
-    e.preventDefault()
-    setError(null)
-    setIsLoading(true)
-
-    await authClient.signUp.email(
-      {
-        email,
-        password,
-        name,
+  const form = useClientForm({
+    schema: registerSchema,
+    defaultValues: {
+      name: '',
+      username: '',
+      phone: '',
+      email: '',
+      password: '',
+      confirmPassword: '',
+    },
+    handler: async (values) => {
+      await authClient.signUp.email({
+        ...values,
         callbackURL: '/',
-      },
-      {
-        onRequest: () => setIsLoading(true),
-        onSuccess: () => {
-          setIsLoading(false)
-          router.push('/login?registered=true')
-        },
-        onError: (ctx) => {
-          setIsLoading(false)
-          setError(
-            ctx.error?.message || 'Something went wrong. Please try again.',
-          )
-        },
-      },
-    )
+      })
+      return { success: true }
+    },
+  })
+
+  // Generate username from name while typing
+  useEffect(() => {
+    const subscription = form.watch((value, { name }) => {
+      if (name === 'name') {
+        const generatedUsername =
+          value.name?.toLowerCase().replace(/\s+/g, '.') || ''
+        form.setValue('username', generatedUsername)
+      }
+    })
+    return () => subscription.unsubscribe()
+  }, [form])
+
+  const nextStep = () => {
+    setStep(2)
+  }
+
+  const prevStep = () => {
+    setStep(1)
   }
 
   return (
     <div className="flex min-h-screen items-center justify-center px-4 py-12 sm:px-6 lg:px-8">
       <div className="w-full max-w-md space-y-8">
         <div className="text-center">
-          <h1 className="text-3xl font-bold tracking-tight">Bem vindo</h1>
+          <h1 className="text-3xl font-bold tracking-tight">
+            {step === 1 ? 'Bem vindo' : 'Falta pouco...'}
+          </h1>
           <p className="mt-6 text-slate-600">
-            Vamos criar a sua conta do Petbook para começar a usar a nossa rede
-            social.
+            {step === 1
+              ? 'Vamos criar a sua conta do Petbook para começar a usar a nossa rede social.'
+              : 'Para finalizarmos, informe o seu email e a senha para entrar na conta.'}
           </p>
         </div>
-        <form className="mt-8 space-y-6" onSubmit={handleSubmit}>
-          <div className="space-y-4">
-            <div>
-              <Label htmlFor="name">Seu nome completo</Label>
-              <Input
-                id="name"
+        <Form {...form} className="mt-8 space-y-6">
+          {step === 1 ? (
+            <div className="space-y-4">
+              <FormField
+                control={form.control}
                 name="name"
-                type="text"
-                autoComplete="name"
-                placeholder="Marty McFly"
-                icon={UserIcon}
-                value={name}
-                onChange={(e) => setName(e.target.value)}
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Seu nome completo</FormLabel>
+                    <FormControl>
+                      <Input
+                        {...field}
+                        type="text"
+                        autoComplete="name"
+                        placeholder="Marty McFly"
+                        icon={UserIcon}
+                      />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
               />
-            </div>
-            <div className="space-y-2">
-              <Label htmlFor="email">Seu nome de usuário</Label>
-              <Input
-                id="email"
-                name="email"
-                type="email"
-                autoComplete="email"
-                required
-                placeholder="marty.mcfly"
-                icon={AtSignIcon}
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
+              <FormField
+                control={form.control}
+                name="username"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Seu nome de usuário</FormLabel>
+                    <FormControl>
+                      <Input
+                        {...field}
+                        type="text"
+                        autoComplete="username"
+                        placeholder="marty.mcfly"
+                        icon={AtSignIcon}
+                      />
+                    </FormControl>
+                    <FormMessage />
+                    <Label className="text-xs text-muted opacity-60">
+                      Este será seu arroba para a rede social.
+                    </Label>
+                  </FormItem>
+                )}
               />
-              <p className="text-xs text-muted-foreground">
-                Esse será seu arroba para a rede social
-              </p>
-            </div>
-            <div className="space-y-2">
-              <Label htmlFor="password">Seu telefone</Label>
-              <Input
-                id="phone"
+              <FormField
+                control={form.control}
                 name="phone"
-                type="tel"
-                autoComplete="tel"
-                required
-                icon={PhoneIcon}
-                placeholder="(48) 12345-6789"
-                value={password}
-                onChange={(e) => setPassword(e.target.value)}
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Seu telefone</FormLabel>
+                    <FormControl>
+                      <Input
+                        {...field}
+                        type="tel"
+                        autoComplete="tel"
+                        placeholder="(48) 12345-6789"
+                        icon={PhoneIcon}
+                      />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
               />
+              <Button type="button" onClick={nextStep} className="w-full">
+                Próximo
+              </Button>
             </div>
-          </div>
-
-          {error && (
-            <div className="text-sm text-red-500 font-medium">{error}</div>
+          ) : (
+            <div className="space-y-4">
+              <FormField
+                control={form.control}
+                name="email"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Seu email</FormLabel>
+                    <FormControl>
+                      <Input
+                        {...field}
+                        type="email"
+                        autoComplete="email"
+                        placeholder="marty@example.com"
+                        icon={AtSignIcon}
+                      />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+              <FormField
+                control={form.control}
+                name="password"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Senha</FormLabel>
+                    <FormControl>
+                      <Input
+                        {...field}
+                        type="password"
+                        autoComplete="new-password"
+                        placeholder="******"
+                      />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+              <FormField
+                control={form.control}
+                name="confirmPassword"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Confirmar senha</FormLabel>
+                    <FormControl>
+                      <Input
+                        {...field}
+                        type="password"
+                        autoComplete="new-password"
+                        placeholder="******"
+                      />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+              <div className="flex space-x-4">
+                <Button type="button" onClick={prevStep} className="w-full">
+                  Voltar
+                </Button>
+                <Button
+                  type="submit"
+                  className="w-full"
+                  disabled={form.isSubmitting}
+                >
+                  {form.isSubmitting ? 'Criando conta...' : 'Criar conta'}
+                </Button>
+              </div>
+            </div>
           )}
-
-          <Button type="submit" className="w-full" disabled={isLoading}>
-            {isLoading ? 'Creating account...' : 'Create account'}
-          </Button>
-
+          {form.error && (
+            <div className="text-sm text-red-500 font-medium">{form.error}</div>
+          )}
           <div className="text-center text-sm">
-            <span className="text-gray-600">Already have an account?</span>{' '}
+            <span className="text-gray-600">Já tem uma conta?</span>{' '}
             <Link
               href="/login"
               className="font-medium text-primary hover:underline"
             >
-              Sign in
+              Entrar
             </Link>
           </div>
-        </form>
+        </Form>
       </div>
     </div>
   )
