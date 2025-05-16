@@ -1,5 +1,6 @@
 import { headers } from 'next/headers'
 
+import { Container } from '@/components/layout/container'
 import { auth } from '@/lib/auth'
 
 export default async function AppPage() {
@@ -7,5 +8,9 @@ export default async function AppPage() {
     headers: await headers(),
   })
 
-  return <div>{JSON.stringify(session?.user)}</div>
+  return (
+    <Container>
+      <pre className="break-all">{JSON.stringify(session?.user, null, 2)}</pre>
+    </Container>
+  )
 }

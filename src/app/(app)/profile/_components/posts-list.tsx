@@ -1,4 +1,4 @@
-import PostItem from "./post-item";
+import PostItem from './post-item'
 
 export default function PostsList() {
   return (
@@ -13,5 +13,5 @@ export default function PostsList() {
         <PostItem />
       </div>
     </div>
-  );
+  )
 }
