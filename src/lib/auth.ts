@@ -14,12 +14,11 @@ export const auth = betterAuth({
   },
 
   user: {
-    modelName: 'users',
     fields: {
-      name: 'full_name',
-      emailVerified: 'email_verified',
-      createdAt: 'created_at',
-      updatedAt: 'updated_at',
+      name: 'fullName',
+      emailVerified: 'emailVerified',
+      createdAt: 'createdAt',
+      updatedAt: 'updatedAt',
     },
 
     additionalFields: {
@@ -32,8 +31,8 @@ export const auth = betterAuth({
       schema: {
         user: {
           fields: {
-            displayUsername: 'full_name',
-            username: 'username',
+            displayUsername: 'fullName',
+            username: 'userName',
           },
         },
       },
