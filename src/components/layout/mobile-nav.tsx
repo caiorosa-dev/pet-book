@@ -2,6 +2,7 @@
 
 import { GlobeIcon, Home, PlusCircleIcon, SearchIcon, User } from 'lucide-react'
 import Link from 'next/link'
+import { usePathname } from 'next/navigation'
 
 import { cn } from '@/lib/utils'
 
@@ -16,21 +17,19 @@ type MobileNavLinkProps = {
 }
 
 function MobileNavLink({ href, icon: Icon, exact }: MobileNavLinkProps) {
-  const isActive = exact
-    ? window.location.pathname === href
-    : window.location.pathname.startsWith(href)
+  const pathname = usePathname()
+
+  const isActive = exact ? pathname === href : pathname.startsWith(href)
 
   return (
     <li
-      className={`group rounded-md w-12 h-12 flex justify-center items-center ${isActive ? 'bg-primary' : 'bg-transparent'}`}
+      className={cn(
+        'group rounded-full w-12 h-12 flex justify-center items-center hover:bg-secondary',
+        isActive ? 'text-primary' : 'text-muted  cursor-pointer',
+      )}
     >
-      <Link
-        href={href}
-        className={`flex items-center justify-center ${isActive ? 'text-primary-foreground' : 'text-muted-foreground hover:text-primary'}`}
-      >
-        <Icon
-          className={`h-5 w-5 ${isActive ? 'text-primary-foreground' : 'group-hover:text-primary'}`}
-        />
+      <Link href={href} className={`flex items-center justify-center `}>
+        <Icon className={`h-5 w-5`} />
       </Link>
     </li>
   )
@@ -40,16 +39,16 @@ export function MobileNav({ className }: MobileNavProps) {
   return (
     <nav
       className={cn(
-        'fixed bottom-0 left-0 w-full bg-slate-100 dark:bg-slate-900 py-1',
+        'fixed bottom-0 left-0 w-full bg-background py-1',
         className,
       )}
     >
       <ul className="flex justify-around items-center max-w-xl w-full mx-auto">
         <MobileNavLink href="/" icon={Home} exact />
-        <MobileNavLink href="/" icon={SearchIcon} />
-        <MobileNavLink href="/" icon={PlusCircleIcon} />
-        <MobileNavLink href="/" icon={GlobeIcon} />
-        <MobileNavLink href="/" icon={User} />
+        <MobileNavLink href="/search" icon={SearchIcon} />
+        <MobileNavLink href="/new-post" icon={PlusCircleIcon} />
+        <MobileNavLink href="/orgs" icon={GlobeIcon} />
+        <MobileNavLink href="/profile" icon={User} />
       </ul>
     </nav>
   )
