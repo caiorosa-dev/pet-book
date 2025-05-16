@@ -31,7 +31,7 @@ export const auth = betterAuth({
       schema: {
         user: {
           fields: {
-            displayUsername: 'fullName',
+            displayUsername: 'userName',
             username: 'userName',
           },
         },
