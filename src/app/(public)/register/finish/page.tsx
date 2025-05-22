@@ -4,6 +4,7 @@ import { AtSignIcon, LockIcon } from 'lucide-react'
 import Link from 'next/link'
 import { useRouter } from 'next/navigation'
 import { useEffect } from 'react'
+import { toast } from 'sonner'
 import { z } from 'zod'
 
 import { Button } from '@/components/ui/button'
@@ -57,10 +58,13 @@ export default function RegisterFinishPage() {
         phone,
         ...values,
       })
-
+    },
+    onSubmitSuccess: () => {
       router.push('/register/welcome')
-
-      return { success: true }
+    },
+    onSubmitError: (error) => {
+      console.error(error)
+      toast.error(error.message)
     },
   })
 

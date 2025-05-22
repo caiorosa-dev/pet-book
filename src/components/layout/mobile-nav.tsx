@@ -1,13 +1,18 @@
 'use client'
 
-import { GlobeIcon, Home, PlusCircleIcon, SearchIcon, User } from 'lucide-react'
+import { User } from 'better-auth'
+import { GlobeIcon, Home, PlusCircleIcon, SearchIcon } from 'lucide-react'
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
 
+import { getNameInitials } from '@/helpers/get-name-initials'
 import { cn } from '@/lib/utils'
+
+import { Avatar, AvatarFallback, AvatarImage } from '../ui/avatar'
 
 type MobileNavProps = {
   className?: string
+  user: User
 }
 
 type MobileNavLinkProps = {
@@ -22,20 +27,42 @@ function MobileNavLink({ href, icon: Icon, exact }: MobileNavLinkProps) {
   const isActive = exact ? pathname === href : pathname.startsWith(href)
 
   return (
-    <li
+    <Link
+      href={href}
       className={cn(
-        'group rounded-full w-12 h-12 flex justify-center items-center hover:bg-secondary',
+        'group rounded-full size-12 flex justify-center items-center hover:bg-secondary',
         isActive ? 'text-primary' : 'text-muted  cursor-pointer',
       )}
     >
-      <Link href={href} className={`flex items-center justify-center `}>
-        <Icon className={`h-5 w-5`} />
-      </Link>
-    </li>
+      <Icon className={`h-5 w-5`} />
+    </Link>
   )
 }
 
-export function MobileNav({ className }: MobileNavProps) {
+function UserImage({ user }: { user: User }) {
+  const pathname = usePathname()
+
+  const isActive = pathname === '/profile'
+
+  return (
+    <Link
+      href={'/profile'}
+      className="rounded-full size-12 flex justify-center items-center hover:bg-secondary"
+    >
+      <Avatar
+        className={cn(
+          'rounded-full size-9 bg-secondary transition-all duration-300',
+          isActive ? 'border-2 border-primary' : '',
+        )}
+      >
+        <AvatarImage src={user.image ?? ''} />
+        <AvatarFallback>{getNameInitials(user.name)}</AvatarFallback>
+      </Avatar>
+    </Link>
+  )
+}
+
+export function MobileNav({ className, user }: MobileNavProps) {
   return (
     <nav
       className={cn(
@@ -48,7 +75,7 @@ export function MobileNav({ className }: MobileNavProps) {
         <MobileNavLink href="/search" icon={SearchIcon} />
         <MobileNavLink href="/new-post" icon={PlusCircleIcon} />
         <MobileNavLink href="/orgs" icon={GlobeIcon} />
-        <MobileNavLink href="/profile" icon={User} />
+        <UserImage user={user} />
       </ul>
     </nav>
   )
