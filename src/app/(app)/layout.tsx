@@ -1,19 +1,16 @@
-import { headers } from 'next/headers'
 import { redirect } from 'next/navigation'
 
 import { FullScreenPage } from '@/components/layout/full-screen-page'
 import { Header } from '@/components/layout/header'
 import { MobileNav } from '@/components/layout/mobile-nav'
-import { auth } from '@/lib/auth'
+import { getSession } from '@/lib/auth'
 
 export default async function AppLayout({
   children,
 }: {
   children: React.ReactNode
 }) {
-  const authSession = await auth.api.getSession({
-    headers: await headers(),
-  })
+  const authSession = await getSession()
 
   if (!authSession) {
     redirect('/welcome')
@@ -24,7 +21,7 @@ export default async function AppLayout({
       <FullScreenPage inApp>
         <Header currentLocation={'Itajaí, SC'} />
         {children}
-        <MobileNav />
+        <MobileNav user={authSession.user} />
       </FullScreenPage>
     </>
   )
