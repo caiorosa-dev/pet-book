@@ -1,5 +1,6 @@
-import { Avatar, AvatarImage } from '@/components/ui/avatar'
-import { Button } from '@/components/ui/button'
+import { Avatar, AvatarImage } from "@/components/ui/avatar";
+import { Button } from "@/components/ui/button";
+import Link from "next/link";
 
 export default function ProfileHeader() {
   return (
@@ -8,7 +9,7 @@ export default function ProfileHeader() {
         <div className="flex flex-col items-center justify-center">
           <Avatar className="w-24 h-24">
             <AvatarImage
-              src={'https://randomuser.me/api/portraits/men/69.jpg'}
+              src={"https://randomuser.me/api/portraits/men/69.jpg"}
             />
           </Avatar>
         </div>
@@ -33,13 +34,15 @@ export default function ProfileHeader() {
       </div>
 
       <div className="flex gap-4">
-        <Button variant="accent" size="sm" className="flex-1">
-          Editar perfil
-        </Button>
+        <Link href={"profile/edit"} className="flex-1">
+          <Button variant="accent" size="sm" className="w-full">
+            Editar perfil
+          </Button>
+        </Link>
         <Button variant="accent" size="sm" className="flex-1">
           Compartilhar Perfil
         </Button>
       </div>
     </header>
-  )
+  );
 }
