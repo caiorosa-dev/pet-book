@@ -1,3 +1,4 @@
+"use client";
 import { Avatar, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
 import {
@@ -10,35 +11,49 @@ import {
 } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { Session, User } from "better-auth";
 import { Pencil } from "lucide-react";
+import { useDropzone } from "react-dropzone";
 
-function EditProfileTab() {
+function EditProfileTab({ session, user }: { session: Session; user: User }) {
+  const { getRootProps, getInputProps, isDragActive } = useDropzone();
+
   return (
     <Card>
       <CardHeader>
-        <CardTitle>Account</CardTitle>
+        <CardTitle>Opções de conta</CardTitle>
       </CardHeader>
       <CardContent className="space-y-2">
         <div className="flex justify-center">
-          <Avatar className="w-24 h-24 relative">
+          <Avatar
+            {...getRootProps()}
+            className="relative w-24 h-24 rounded-full overflow-hidden cursor-pointer group"
+          >
+            <input {...getInputProps()} />
             <AvatarImage
-              src={"https://randomuser.me/api/portraits/men/69.jpg"}
+              src={
+                // user.image ??
+                "https://icons.veryicon.com/png/o/miscellaneous/rookie-official-icon-gallery/225-default-avatar.png"
+              }
+              alt="Avatar"
+              className="object-cover w-full h-full"
             />
-            <div className="opacity-0 hover:opacity-100 absolute flex justify-center items-center bg-accent-foreground/70 transition-all cursor-pointer w-full h-full">
-              <Pencil />
+            <div className="absolute inset-0 bg-accent-foreground/70 opacity-0 group-hover:opacity-100 flex items-center justify-center transition-opacity">
+              <Pencil className="text-white" />
             </div>
           </Avatar>
         </div>
         <div className="space-y-1">
-          <Label htmlFor="name">Name</Label>
-          <Input id="name" defaultValue="Pedro Duarte" />
+          <Label htmlFor="name">Nome</Label>
+          <Input id="name" defaultValue={user.name} />
         </div>
       </CardContent>
       <CardFooter>
-        <Button>Save changes</Button>
+        <Button>Salvar alterações</Button>
       </CardFooter>
     </Card>
   );
 }
 
 export default EditProfileTab;
+

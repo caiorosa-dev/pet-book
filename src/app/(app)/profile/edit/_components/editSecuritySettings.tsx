@@ -9,28 +9,29 @@ import {
 } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { Session } from "better-auth";
 
-function EditSecuritySettings() {
+function EditSecuritySettings({ session, user }: { session: Session, user : User }) {
   return (
     <Card>
       <CardHeader>
-        <CardTitle>Password</CardTitle>
+        <CardTitle>Troca de senha</CardTitle>
       </CardHeader>
       <CardContent className="space-y-2">
         <div className="space-y-1">
-          <Label htmlFor="current">Current password</Label>
+          <Label htmlFor="current">Senha atual</Label>
           <Input id="current" type="password" />
         </div>
         <div className="space-y-1">
-          <Label htmlFor="new">New password</Label>
+          <Label htmlFor="new">Nova senha</Label>
           <Input id="new" type="password" />
         </div>
       </CardContent>
       <CardFooter>
-        <Button>Save password</Button>
+        <Button>Trocar senha</Button>
       </CardFooter>
     </Card>
-  )
+  );
 }
 
-export default EditSecuritySettings
+export default EditSecuritySettings;
