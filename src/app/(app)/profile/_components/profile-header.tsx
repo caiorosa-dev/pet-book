@@ -1,15 +1,24 @@
 import { Avatar, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
 import Link from "next/link";
+import { auth } from "@/lib/auth";
+import { authClient } from "@/lib/auth-client";
+import { headers } from "next/headers";
 
-export default function ProfileHeader() {
+export default async function ProfileHeader() {
+  const session = await auth.api.getSession({
+    headers: await headers(),
+  });
   return (
     <header className="space-y-4">
       <div className="flex w-full justify-between gap-4 items-center">
         <div className="flex flex-col items-center justify-center">
           <Avatar className="w-24 h-24">
             <AvatarImage
-              src={"https://randomuser.me/api/portraits/men/69.jpg"}
+              src={
+                session?.user.image ??
+                "https://icons.veryicon.com/png/o/miscellaneous/rookie-official-icon-gallery/225-default-avatar.png"
+              }
             />
           </Avatar>
         </div>
@@ -29,8 +38,8 @@ export default function ProfileHeader() {
         </div>
       </div>
       <div className="flex justify-between">
-        <h1 className="text-xl">Marty McFly</h1>
-        <a className="text-primary">@marty_mcfly</a>
+        <h1 className="text-xl">{session?.user.name}</h1>
+        <a className="text-primary">@{session?.user.username}</a>
       </div>
 
       <div className="flex gap-4">
