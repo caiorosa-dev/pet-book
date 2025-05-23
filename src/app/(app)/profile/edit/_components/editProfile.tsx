@@ -20,7 +20,6 @@ import { useState } from "react";
 function EditProfileTab({ session, user }: { session: Session; user: User }) {
   const { getRootProps, getInputProps, isDragActive } = useDropzone();
   const [name, setName] = useState(user.name);
-  console.log(user);
   return (
     <Card>
       <CardHeader>
@@ -56,7 +55,11 @@ function EditProfileTab({ session, user }: { session: Session; user: User }) {
         </div>
       </CardContent>
       <CardFooter>
-        <Button onClick={() => saveProfileSettings(user.id, name)}>
+        <Button
+          onClick={() =>
+            saveProfileSettings(name, session.id, session.token)
+          }
+        >
           Salvar alterações
         </Button>
       </CardFooter>
