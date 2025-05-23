@@ -1,3 +1,4 @@
+"use client";
 import { Button } from "@/components/ui/button";
 import {
   Card,
@@ -9,9 +10,27 @@ import {
 } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Session } from "better-auth";
+import { Session, User } from "better-auth";
+import { useState } from "react";
+import { changePassword } from "./actions";
+import { authClient } from "@/lib/auth-client";
 
-function EditSecuritySettings({ session, user }: { session: Session, user : User }) {
+function EditSecuritySettings({
+  session,
+  user,
+}: {
+  session: Session;
+  user: User;
+}) {
+  const [oldPassword, setOldPassword] = useState("");
+  const [newPassword, setNewPassword] = useState("");
+  function changePassword() {
+    authClient.changePassword({
+      currentPassword: oldPassword,
+      newPassword: newPassword,
+    });
+  }
+
   return (
     <Card>
       <CardHeader>
@@ -20,15 +39,27 @@ function EditSecuritySettings({ session, user }: { session: Session, user : User
       <CardContent className="space-y-2">
         <div className="space-y-1">
           <Label htmlFor="current">Senha atual</Label>
-          <Input id="current" type="password" />
+          <Input
+            onChange={(e) => setOldPassword(e.target.value)}
+            id="current"
+            type="password"
+          />
         </div>
         <div className="space-y-1">
           <Label htmlFor="new">Nova senha</Label>
-          <Input id="new" type="password" />
+          <Input
+            onChange={(e) => setNewPassword(e.target.value)}
+            id="new"
+            type="password"
+          />
         </div>
       </CardContent>
       <CardFooter>
-        <Button>Trocar senha</Button>
+        <Button
+          onClick={() => changePassword()}
+        >
+          Trocar senha
+        </Button>
       </CardFooter>
     </Card>
   );

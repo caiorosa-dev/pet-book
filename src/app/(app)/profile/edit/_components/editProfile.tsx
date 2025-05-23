@@ -14,10 +14,13 @@ import { Label } from "@/components/ui/label";
 import { Session, User } from "better-auth";
 import { Pencil } from "lucide-react";
 import { useDropzone } from "react-dropzone";
+import { saveProfileSettings } from "./actions";
+import { useState } from "react";
 
 function EditProfileTab({ session, user }: { session: Session; user: User }) {
   const { getRootProps, getInputProps, isDragActive } = useDropzone();
-
+  const [name, setName] = useState(user.name);
+  console.log(user);
   return (
     <Card>
       <CardHeader>
@@ -45,15 +48,20 @@ function EditProfileTab({ session, user }: { session: Session; user: User }) {
         </div>
         <div className="space-y-1">
           <Label htmlFor="name">Nome</Label>
-          <Input id="name" defaultValue={user.name} />
+          <Input
+            onChange={(e) => setName(e.target.value)}
+            id="name"
+            value={name}
+          />
         </div>
       </CardContent>
       <CardFooter>
-        <Button>Salvar alterações</Button>
+        <Button onClick={() => saveProfileSettings(user.id, name)}>
+          Salvar alterações
+        </Button>
       </CardFooter>
     </Card>
   );
 }
 
 export default EditProfileTab;
-
