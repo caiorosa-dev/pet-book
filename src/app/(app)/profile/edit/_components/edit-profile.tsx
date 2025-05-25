@@ -4,20 +4,18 @@ import { Button } from "@/components/ui/button";
 import {
   Card,
   CardContent,
-  CardDescription,
   CardFooter,
   CardHeader,
-  CardTitle,
+  CardTitle
 } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Session, User } from "better-auth";
 import { Pencil } from "lucide-react";
+import { useState } from "react";
 import { useDropzone } from "react-dropzone";
 import { saveProfileSettings } from "./actions";
-import { useState } from "react";
 
-function EditProfileTab({ session, user }: { session: Session; user: User }) {
+function EditProfileTab() {
   const { getRootProps, getInputProps } = useDropzone();
   const [name, setName] = useState(user.name);
   return (
@@ -55,11 +53,7 @@ function EditProfileTab({ session, user }: { session: Session; user: User }) {
         </div>
       </CardContent>
       <CardFooter>
-        <Button
-          onClick={() =>
-            saveProfileSettings(name, session.id, session.token)
-          }
-        >
+        <Button onClick={() => saveProfileSettings(name)}>
           Salvar alterações
         </Button>
       </CardFooter>

@@ -1,14 +1,9 @@
 import { Container } from "@/components/layout/container";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import EditSecuritySettings from "./_components/editSecuritySettings";
-import EditProfileTab from "./_components/editProfile";
-import { auth } from "@/lib/auth";
-import { headers } from "next/headers";
+import EditProfileTab from "./_components/edit-profile";
+import EditSecuritySettings from "./_components/edit-security-settings";
 
 export default async function EditProfile() {
-  const session = await auth.api.getSession({
-    headers: await headers(),
-  })
   return (
     <Container>
       <Tabs defaultValue="account" className="w-[400px]">
@@ -17,10 +12,10 @@ export default async function EditProfile() {
           <TabsTrigger value="password">Password</TabsTrigger>
         </TabsList>
         <TabsContent value="account">
-          <EditProfileTab session={session?.session} user={session?.user} />
+          <EditProfileTab />
         </TabsContent>
         <TabsContent value="password">
-          <EditSecuritySettings session={session?.session} user={session?.user} />
+          <EditSecuritySettings />
         </TabsContent>
       </Tabs>
     </Container>

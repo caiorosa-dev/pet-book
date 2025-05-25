@@ -1,14 +1,12 @@
 "use server";
 
-import { authClient } from "@/lib/auth-client";
+import { auth } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
+import { headers } from "next/headers";
 
-export const saveProfileSettings = async (newName: string, sessionID: string, sessionToken: string) => {
-    const session = await prisma.session.findFirst({
-        where: {
-            token: sessionToken,
-            id: sessionID
-        }
+export const saveProfileSettings = async (newName: string) => {
+    const session = await auth.api.getSession({
+        headers: await headers(),
     })
 
     if (session == null) {
@@ -20,7 +18,7 @@ export const saveProfileSettings = async (newName: string, sessionID: string, se
             fullName: newName
         },
         where: {
-            id: session.userId
+            id: session.user.id
         }
     })
 }

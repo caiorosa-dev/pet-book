@@ -3,25 +3,16 @@ import { Button } from "@/components/ui/button";
 import {
   Card,
   CardContent,
-  CardDescription,
   CardFooter,
   CardHeader,
-  CardTitle,
+  CardTitle
 } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Session, User } from "better-auth";
-import { useState } from "react";
-import { changePassword } from "./actions";
 import { authClient } from "@/lib/auth-client";
+import { useState } from "react";
 
-function EditSecuritySettings({
-  session,
-  user,
-}: {
-  session: Session;
-  user: User;
-}) {
+function EditSecuritySettings() {
   const [oldPassword, setOldPassword] = useState("");
   const [newPassword, setNewPassword] = useState("");
   function changePassword() {
