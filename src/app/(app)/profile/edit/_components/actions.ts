@@ -21,4 +21,5 @@ export const saveProfileSettings = async (newName: string) => {
             id: session.user.id
         }
     })
+
 }
