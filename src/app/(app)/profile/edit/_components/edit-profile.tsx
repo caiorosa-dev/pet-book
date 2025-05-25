@@ -15,9 +15,9 @@ import { useState } from "react";
 import { useDropzone } from "react-dropzone";
 import { saveProfileSettings } from "./actions";
 
-function EditProfileTab() {
+function EditProfileTab({userName} : {userName : string}) {
   const { getRootProps, getInputProps } = useDropzone();
-  const [name, setName] = useState(user.name);
+  const [name, setName] = useState(userName);
   return (
     <Card>
       <CardHeader>
