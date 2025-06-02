@@ -39,49 +39,13 @@ export default function AddPetPage() {
       features: '',
     },
     handler: async (values) => {
+      // Apenas validação local, sem chamada ao backend
       if (!photo) {
         setPhotoError('Adicione uma foto do pet.')
         return { success: false }
       }
-
-      const formData = new FormData()
-      formData.append('name', values.name)
-      formData.append('species', values.species)
-      formData.append('breed', values.breed)
-      formData.append('features', values.features || '')
-
-      // Converter a foto base64 para Blob
-      function dataURLtoBlob(dataurl: string) {
-        const arr = dataurl.split(',')
-        const mime = arr[0].match(/:(.*?);/)?.[1] || ''
-        const bstr = atob(arr[1])
-        let n = bstr.length
-        const u8arr = new Uint8Array(n)
-        while (n--) {
-          u8arr[n] = bstr.charCodeAt(n)
-        }
-        return new Blob([u8arr], { type: mime })
-      }
-
-      const photoBlob = dataURLtoBlob(photo)
-      formData.append('photo', photoBlob, 'pet-photo.jpg')
-
-      try {
-        const response = await fetch('/api/pets', {
-          method: 'POST',
-          body: formData,
-        })
-
-        if (!response.ok) {
-          throw new Error('Erro ao salvar o pet.')
-        }
-
-        setPhotoSuccess(true)
-        return { success: true }
-      } catch (err) {
-        setPhotoError('Erro ao salvar o pet.')
-        return { success: false }
-      }
+      setPhotoSuccess(true)
+      return { success: true }
     },
   })
 
