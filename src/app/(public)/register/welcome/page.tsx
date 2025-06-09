@@ -1,3 +1,4 @@
+/* eslint-disable @next/next/no-img-element */
 'use client'
 
 import { useRouter } from 'next/navigation'
@@ -27,7 +28,7 @@ export default function RegisterWelcomePage() {
       <div className="w-full max-w-md space-y-8 text-center">
         <div>
           <h1 className="text-3xl font-bold tracking-tight">
-            Bem vindo, {name}!
+            Bem vindo, <span className="text-primary">{name}</span>!
           </h1>
           <p className="mt-6 text-slate-600">
             Sua conta já está criada, você já tem acesso ao Petbook a partir de
@@ -35,15 +36,23 @@ export default function RegisterWelcomePage() {
           </p>
         </div>
 
+        <div className="flex justify-center">
+          <img src="/images/welcome.svg" alt="Welcome" className="h-[400px]" />
+        </div>
+
         <div className="space-y-4">
-          <Button onClick={() => router.push('/')} className="w-full" size="lg">
+          <Button
+            onClick={() => router.push('/')}
+            className="w-full"
+            size="rounded"
+          >
             Visualizar o feed
           </Button>
           <Button
             onClick={() => router.push('/profile/new-pet')}
             className="w-full"
-            variant="outline"
-            size="lg"
+            variant="muted"
+            size="rounded"
           >
             Cadastrar meu pet
           </Button>

@@ -1,12 +1,13 @@
 'use client'
 
-import { AtSignIcon, PhoneIcon, UserIcon } from 'lucide-react'
+import { ArrowRightIcon, AtSignIcon, PhoneIcon, UserIcon } from 'lucide-react'
 import Link from 'next/link'
 import { useRouter } from 'next/navigation'
 import { useEffect } from 'react'
+import { toast } from 'sonner'
 import { z } from 'zod'
 
-import { Button } from '@/components/ui/button'
+import { Button, ButtonIcon } from '@/components/ui/button'
 import {
   Form,
   FormControl,
@@ -39,8 +40,14 @@ export default function RegisterPage() {
     },
     handler: async (values) => {
       setStep1Data(values)
-      router.push('/register/finish')
+
       return { success: true }
+    },
+    onSubmitSuccess: () => {
+      router.push('/register/finish')
+    },
+    onSubmitError: (error) => {
+      toast.error(error.message)
     },
   })
 
@@ -131,9 +138,11 @@ export default function RegisterPage() {
             <Button
               type="submit"
               className="w-full"
+              size="rounded"
               disabled={form.isSubmitting}
             >
               {form.isSubmitting ? 'Avançando...' : 'Próximo'}
+              <ButtonIcon icon={ArrowRightIcon} isLoading={form.isSubmitting} />
             </Button>
           </div>
           {form.error && (
