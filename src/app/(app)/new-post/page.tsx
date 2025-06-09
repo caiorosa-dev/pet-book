@@ -13,6 +13,7 @@ export default function CreatePostPage() {
         <p className="text-center text-secondary-foreground">
           Informe as informações de seu pet para começar a posta com ele
         </p>
+
         <Card className="items-center">
           <CardContent>
             <Image
@@ -26,10 +27,11 @@ export default function CreatePostPage() {
           <CardFooter>
             <Button className="flex gap-2">
               <MapPin />
-              <Link href="post/found-pet">Encontrei um pet</Link>
+              <Link href="new-post/found-pet">Encontrei um pet</Link>
             </Button>
           </CardFooter>
         </Card>
+
         <Card className="items-center">
           <CardContent>
             <Image
@@ -43,7 +45,7 @@ export default function CreatePostPage() {
           <CardFooter>
             <Button className="flex gap-2">
               <Radar />
-              <Link href="post/lost-pet">Perdi meu pet</Link>
+              <Link href="new-post/lost-pet">Perdi meu pet</Link>
             </Button>
           </CardFooter>
         </Card>
