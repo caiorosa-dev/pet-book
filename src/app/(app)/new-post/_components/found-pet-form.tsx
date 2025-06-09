@@ -4,9 +4,9 @@ import { format } from 'date-fns'
 import {
   BoneIcon,
   Calendar as CalendarIcon,
-  Camera,
-  Clipboard,
-  Dog,
+  CameraIcon,
+  ClipboardIcon,
+  DogIcon,
 } from 'lucide-react'
 import React, { useState } from 'react'
 
@@ -43,7 +43,7 @@ export function FoundPetForm() {
   })
 
   return (
-    <Form {...form}>
+    <Form {...form} className="space-y-6">
       <FormField
         control={form.control}
         name="species"
@@ -53,10 +53,7 @@ export function FoundPetForm() {
               Qual a espécie encontrada?
             </FormLabel>
             <FormControl>
-              <div className="relative">
-                <Dog className="absolute left-3 top-1/2 transform -translate-y-1/2 text-primary w-5 h-5" />
-                <Input {...field} placeholder="Cachorro" className="pl-10" />
-              </div>
+              <Input {...field} placeholder="Cachorro" icon={DogIcon} />
             </FormControl>
             <FormMessage />
           </FormItem>
@@ -71,10 +68,7 @@ export function FoundPetForm() {
               Qual a raça do pet encontrado?
             </FormLabel>
             <FormControl>
-              <div className="relative">
-                <BoneIcon className="absolute left-3 top-1/2 transform -translate-y-1/2 text-primary w-5 h-5" />
-                <Input placeholder="Husky" {...field} className="pl-10" />
-              </div>
+              <Input placeholder="Husky" {...field} icon={BoneIcon} />
             </FormControl>
             <FormMessage />
           </FormItem>
@@ -84,7 +78,7 @@ export function FoundPetForm() {
         control={form.control}
         name="datetimeLastSeen"
         render={({ field }) => (
-          <FormItem className="flex flex-col">
+          <FormItem>
             <FormLabel className="!text-black">
               Aonde foi visto por último?
             </FormLabel>
@@ -94,8 +88,8 @@ export function FoundPetForm() {
                   <Button
                     variant="outline"
                     className={cn(
-                      'w-full text-left font-normal justify-start gap-2', // <-- ajuste aqui
-                      !field.value && 'text-muted-foreground',
+                      'w-full text-left font-normal justify-start gap-2',
+                      !field.value && 'text-muted',
                     )}
                   >
                     <CalendarIcon className="h-4 w-4 text-primary" />
@@ -132,14 +126,11 @@ export function FoundPetForm() {
               Descreva o pet encontrado
             </FormLabel>
             <FormControl>
-              <div className="relative">
-                <Clipboard className="absolute left-3 top-3 text-primary w-5 h-5" />
-                <Textarea
-                  placeholder="É um husky que tem os olhos azuis e coloração branca com preto."
-                  className="resize-none pl-10"
-                  {...field}
-                />
-              </div>
+              <Textarea
+                placeholder="É um husky que tem os olhos azuis e coloração branca com preto."
+                icon={ClipboardIcon}
+                {...field}
+              />
             </FormControl>
             <FormMessage />
           </FormItem>
@@ -152,31 +143,29 @@ export function FoundPetForm() {
           <FormItem>
             <FormLabel className="!text-black">Selecione fotos</FormLabel>
             <FormControl>
-              <label className="w-40 h-40 rounded-md border-[3px] border-dashed flex items-center justify-center cursor-pointer hover:bg-muted/50">
-                <Camera className="w-6 h-6 text-muted-foreground" />
-                <Input
-                  type="file"
-                  accept="image/*"
-                  multiple
-                  className="hidden"
-                  onChange={(e) => {
-                    const files = Array.from(e.target.files || [])
-                    field.onChange(e.target.files)
+              <Input
+                type="file"
+                accept="image/*"
+                multiple
+                icon={CameraIcon}
+                className="hidden"
+                onChange={(e) => {
+                  const files = Array.from(e.target.files || [])
+                  field.onChange(e.target.files)
 
-                    const filePreviews = files.map((file) =>
-                      URL.createObjectURL(file),
-                    )
-                    setPreviews(filePreviews)
-                  }}
-                />
-              </label>
+                  const filePreviews = files.map((file) =>
+                    URL.createObjectURL(file),
+                  )
+                  setPreviews(filePreviews)
+                }}
+              />
             </FormControl>
             <FormMessage />
           </FormItem>
         )}
       />
       {previews}
-      <Button className="w-full" type="submit">
+      <Button className="w-full" size="rounded" type="submit">
         Criar post
       </Button>
     </Form>

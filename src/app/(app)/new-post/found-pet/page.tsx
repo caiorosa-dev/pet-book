@@ -1,8 +1,8 @@
 'use client'
 
-import { PetForm } from '../_components/found-pet-form'
+import { FoundPetForm } from '../_components/found-pet-form'
 
-export default function CreatePostPage() {
+export default function CreateFoundPetPostPage() {
   return (
     <>
       <div className="max-w-xl w-full mx-auto h-full flex flex-col gap-10">
@@ -14,7 +14,7 @@ export default function CreatePostPage() {
           comunidade a encontrar seu pet.
         </p>
         <div className="py-4">
-          <PetForm />
+          <FoundPetForm />
         </div>
       </div>
     </>

@@ -2,7 +2,7 @@ import { MapPin, Radar } from 'lucide-react'
 import Image from 'next/image'
 import Link from 'next/link'
 
-import { Button } from '@/components/ui/button'
+import { Button, ButtonIcon } from '@/components/ui/button'
 import { Card, CardContent, CardFooter } from '@/components/ui/card'
 
 export default function CreatePostPage() {
@@ -25,10 +25,12 @@ export default function CreatePostPage() {
             />
           </CardContent>
           <CardFooter>
-            <Button className="flex gap-2">
-              <MapPin />
-              <Link href="new-post/found-pet">Encontrei um pet</Link>
-            </Button>
+            <Link href="/new-post/found-pet">
+              <Button>
+                <ButtonIcon icon={MapPin} />
+                Encontrei um pet
+              </Button>
+            </Link>
           </CardFooter>
         </Card>
 
@@ -43,10 +45,12 @@ export default function CreatePostPage() {
             />
           </CardContent>
           <CardFooter>
-            <Button className="flex gap-2">
-              <Radar />
-              <Link href="new-post/lost-pet">Perdi meu pet</Link>
-            </Button>
+            <Link href="/new-post/lost-pet">
+              <Button>
+                <ButtonIcon icon={Radar} />
+                Perdi meu pet
+              </Button>
+            </Link>
           </CardFooter>
         </Card>
       </div>

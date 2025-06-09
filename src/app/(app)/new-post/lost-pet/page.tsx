@@ -1,25 +1,8 @@
 'use client'
 
-import { z } from 'zod'
+import { LostPetForm } from '../_components/lost-pet-form'
 
-import { formSchema, LostPetForm } from '../_components/lost-pet-form'
-
-export default function CreatePostPage() {
-  function onSubmit(values: z.infer<typeof formSchema>) {
-    console.log(values)
-    try {
-      // axios({
-      //   method: 'post',
-      //   url: '/post/lost-pet/new',
-      //   data: {
-      //     ...values,
-      //   },
-      // })
-    } catch (error) {
-      console.log(error)
-    }
-  }
-
+export default function CreateLostPetPostPage() {
   return (
     <>
       <div className="max-w-xl w-full mx-auto h-full flex flex-col gap-10">
@@ -31,7 +14,7 @@ export default function CreatePostPage() {
           comunidade a encontrar seu pet.
         </p>
         <div className="py-4">
-          <LostPetForm onSubmit={onSubmit} />
+          <LostPetForm userPets={[]} />
         </div>
       </div>
     </>

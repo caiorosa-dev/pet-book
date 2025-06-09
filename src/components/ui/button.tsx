@@ -62,7 +62,7 @@ function ButtonIcon({
   isLoading,
 }: {
   icon: LucideIcon
-  isLoading: boolean
+  isLoading?: boolean
   className?: string
 }) {
   if (isLoading) {

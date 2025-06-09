@@ -10,7 +10,7 @@ export function FullScreenPage({
   return (
     <main
       className={cn(
-        'w-full min-h-screen h-full overflow-y-auto',
+        'w-full min-h-screen h-full overflow-y-auto pb-20',
         inApp && 'grid grid-rows-[auto_1fr]',
         className,
       )}

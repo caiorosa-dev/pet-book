@@ -1,8 +1,12 @@
-/* eslint-disable @typescript-eslint/no-unused-vars */
 'use client'
 
 import { format } from 'date-fns'
-import { Calendar as CalendarIcon, Camera, Clipboard, Dog } from 'lucide-react'
+import {
+  Calendar as CalendarIcon,
+  Camera,
+  ClipboardIcon,
+  Dog,
+} from 'lucide-react'
 import React, { useState } from 'react'
 
 import { Button } from '@/components/ui/button'
@@ -35,7 +39,14 @@ import { cn } from '@/lib/utils'
 import { createLostPetPost } from '../actions'
 import { lostPetSchema } from '../schema'
 
-export function LostPetForm({ userPets }: { userPets: unknown[] }) {
+export type LostPetFormProps = {
+  userPets: {
+    id: string
+    name: string
+  }[]
+}
+
+export function LostPetForm({ userPets }: LostPetFormProps) {
   const [previews, setPreviews] = useState<string[]>([])
 
   const form = useActionForm({
@@ -44,7 +55,7 @@ export function LostPetForm({ userPets }: { userPets: unknown[] }) {
   })
 
   return (
-    <Form {...form}>
+    <Form {...form} className="space-y-6">
       <FormField
         control={form.control}
         name="pet"
@@ -62,11 +73,11 @@ export function LostPetForm({ userPets }: { userPets: unknown[] }) {
               </FormControl>
               <SelectContent>
                 <SelectItem value="pretinha">Pretinha</SelectItem>
-                {/* {userPets.map((pet) => (
+                {userPets.map((pet) => (
                   <SelectItem key={pet.id} value={pet.id}>
                     {pet.name}
                   </SelectItem>
-                ))} */}
+                ))}
               </SelectContent>
             </Select>
             <FormMessage />
@@ -77,7 +88,7 @@ export function LostPetForm({ userPets }: { userPets: unknown[] }) {
         control={form.control}
         name="datetimeLastSeen"
         render={({ field }) => (
-          <FormItem className="flex flex-col">
+          <FormItem>
             <FormLabel className="!text-black">
               Quando foi visto por último
             </FormLabel>
@@ -88,7 +99,7 @@ export function LostPetForm({ userPets }: { userPets: unknown[] }) {
                     variant="outline"
                     className={cn(
                       'w-full text-left font-normal justify-start gap-2', // <-- ajuste aqui
-                      !field.value && 'text-muted-foreground',
+                      !field.value && 'text-muted',
                     )}
                   >
                     <CalendarIcon className="h-4 w-4 text-primary" />
@@ -126,10 +137,9 @@ export function LostPetForm({ userPets }: { userPets: unknown[] }) {
             </FormLabel>
             <FormControl>
               <div className="relative">
-                <Clipboard className="absolute left-3 top-3 text-primary w-5 h-5" />
                 <Textarea
+                  icon={ClipboardIcon}
                   placeholder="Eu vi ele por último na Rua Graça N 295, quem ver ele por favor me chama aqui pela plataforma 😫"
-                  className="resize-none pl-10"
                   {...field}
                 />
               </div>
@@ -146,7 +156,7 @@ export function LostPetForm({ userPets }: { userPets: unknown[] }) {
             <FormLabel className="!text-black">Selecione fotos</FormLabel>
             <FormControl>
               <label className="w-40 h-40 rounded-md border-[3px] border-dashed flex items-center justify-center cursor-pointer hover:bg-muted/50">
-                <Camera className="w-6 h-6 text-muted-foreground" />
+                <Camera className="w-6 h-6 text-muted" />
                 <Input
                   type="file"
                   accept="image/*"
@@ -169,7 +179,7 @@ export function LostPetForm({ userPets }: { userPets: unknown[] }) {
         )}
       />
       {previews}
-      <Button className="w-full" type="submit">
+      <Button className="w-full" size="rounded" type="submit">
         Criar post
       </Button>
     </Form>
