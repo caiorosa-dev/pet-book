@@ -1,6 +1,6 @@
 'use client'
 
-import { ArrowRightIcon, AtSignIcon, PhoneIcon, UserIcon } from 'lucide-react'
+import { ArrowRightIcon, AtSignIcon, UserIcon } from 'lucide-react'
 import Link from 'next/link'
 import { useRouter } from 'next/navigation'
 import { useEffect } from 'react'
@@ -18,6 +18,7 @@ import {
 } from '@/components/ui/form'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
+import { PhoneInput } from '@/components/ui/phone-input'
 import { useClientForm } from '@/hooks/use-client-form'
 import { useRegisterStore } from '@/lib/register-store'
 
@@ -123,12 +124,11 @@ export default function RegisterPage() {
                 <FormItem>
                   <FormLabel>Seu telefone</FormLabel>
                   <FormControl>
-                    <Input
+                    <PhoneInput
                       {...field}
                       type="tel"
                       autoComplete="tel"
-                      placeholder="(48) 12345-6789"
-                      icon={PhoneIcon}
+                      placeholder="+55 (48) 12345-6789"
                     />
                   </FormControl>
                   <FormMessage />
