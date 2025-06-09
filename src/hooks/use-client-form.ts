@@ -63,6 +63,7 @@ export const useClientForm = <Input extends z.ZodType<any, any>, Output>({
 
   const handleSubmit = form.handleSubmit(async (data: z.input<Input>) => {
     setIsSubmitting(true)
+    setError(null)
 
     try {
       const parsedData = parseResultWithDefaultValue(data)
@@ -72,12 +73,12 @@ export const useClientForm = <Input extends z.ZodType<any, any>, Output>({
       const result = await handler(parsedData)
 
       setResponse(result)
-      if (onSubmitSuccess) return onSubmitSuccess(result)
+      if (onSubmitSuccess) onSubmitSuccess(result)
     } catch (error: any) {
-      setError(error)
+      setError(error.message)
 
-      if (onSubmitError) return onSubmitError(error)
-      console.error(error)
+      if (onSubmitError) onSubmitError(error.message)
+      else console.error(error)
     } finally {
       setIsSubmitting(false)
     }
