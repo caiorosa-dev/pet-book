@@ -2,12 +2,12 @@
 
 import Link from 'next/link'
 import { useRouter } from 'next/navigation'
-import { signIn } from 'next-auth/react'
 import { useState } from 'react'
 
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
+import { authClient } from '@/lib/auth-client'
 
 export default function LoginPage() {
   const router = useRouter()
@@ -22,11 +22,21 @@ export default function LoginPage() {
     setIsLoading(true)
 
     try {
-      const result = await signIn('credentials', {
-        email,
-        password,
-        redirect: false,
-      })
+      const result = await authClient.signIn.email(
+        {
+          email,
+          password,
+          callbackURL: '/',
+        },
+        {
+          onRequest: () => setIsLoading(true),
+          onSuccess: () => {
+            setIsLoading(false)
+            router.push('/')
+            router.refresh()
+          },
+        },
+      )
 
       if (result?.error) {
         setError('Invalid email or password')

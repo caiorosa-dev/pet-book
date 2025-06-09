@@ -9,14 +9,40 @@ import {
   type FieldPath,
   type FieldValues,
   FormProvider,
+  FormProviderProps,
   useFormContext,
+  UseFormHandleSubmit,
   useFormState,
 } from 'react-hook-form'
 
 import { Label } from '@/components/ui/label'
 import { cn } from '@/lib/utils'
 
-const Form = FormProvider
+const Form = <
+  TFieldValues extends FieldValues = FieldValues,
+  TContext extends object = object,
+>({
+  children,
+  className,
+  handleSubmitOrigin,
+  handleSubmit,
+  ...props
+}: Omit<FormProviderProps<TFieldValues, TContext>, 'handleSubmit'> & {
+  className?: string
+  handleSubmitOrigin: UseFormHandleSubmit<TFieldValues>
+  handleSubmit?: (
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    e?: React.BaseSyntheticEvent<object, any, any> | undefined,
+  ) => Promise<void>
+}) => {
+  return (
+    <FormProvider handleSubmit={handleSubmitOrigin} {...props}>
+      <form onSubmit={handleSubmit} className={cn(className)}>
+        {children}
+      </form>
+    </FormProvider>
+  )
+}
 
 type FormFieldContextValue<
   TFieldValues extends FieldValues = FieldValues,
@@ -135,9 +161,12 @@ function FormDescription({ className, ...props }: React.ComponentProps<'p'>) {
   )
 }
 
-function FormMessage({ className, ...props }: React.ComponentProps<'p'>) {
+const FormMessage = React.forwardRef<
+  HTMLParagraphElement,
+  React.HTMLAttributes<HTMLParagraphElement>
+>(({ className, children, ...props }, ref) => {
   const { error, formMessageId } = useFormField()
-  const body = error ? String(error?.message ?? '') : props.children
+  const body = error ? String(error?.message) : children
 
   if (!body) {
     return null
@@ -145,15 +174,16 @@ function FormMessage({ className, ...props }: React.ComponentProps<'p'>) {
 
   return (
     <p
-      data-slot="form-message"
+      ref={ref}
       id={formMessageId}
-      className={cn('text-destructive text-sm', className)}
+      className={cn('text-[0.8rem] font-medium text-destructive', className)}
       {...props}
     >
       {body}
     </p>
   )
-}
+})
+FormMessage.displayName = 'FormMessage'
 
 export {
   Form,

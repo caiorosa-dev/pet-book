@@ -3,21 +3,19 @@ import { MapPin, MessagesSquare } from 'lucide-react'
 import { Logo } from '@/components/misc/logo'
 import { Button } from '@/components/ui/button'
 
-export function Header({ className }: { className?: string }) {
-  const currentLocation: string = 'Itajaí, SC'
-
+export function Header({ currentLocation }: { currentLocation: string }) {
   return (
-    <div className={className ?? 'flex items-center justify-between p-4'}>
+    <header className="max-w-xl w-full mx-auto flex items-center justify-between p-4">
       <Logo />
-      <div className="flex items-center">
-        <Button className="bg-transparent hover:bg-accent">
-          <MapPin className="text-primary" />
+      <div className="flex items-center gap-2">
+        <Button variant="ghost" size="sm">
+          <MapPin className="size-5 text-primary" />
+          <span className="mx-4">{currentLocation}</span>
         </Button>
-        <span className="mx-4">{currentLocation}</span>
-        <Button className="bg-transparent hover:bg-accent">
-          <MessagesSquare className="text-primary" />
+        <Button variant="secondary" size="icon" className="text-primary">
+          <MessagesSquare className="size-5" />
         </Button>
       </div>
-    </div>
+    </header>
   )
 }

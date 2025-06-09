@@ -1,13 +1,28 @@
+import { redirect } from 'next/navigation'
+
 import { FullScreenPage } from '@/components/layout/full-screen-page'
 import { Header } from '@/components/layout/header'
-import { Navbar } from '@/components/layout/navbar'
+import { MobileNav } from '@/components/layout/mobile-nav'
+import { getSession } from '@/lib/auth'
 
-export default function AppLayout({ children }: { children: React.ReactNode }) {
+export default async function AppLayout({
+  children,
+}: {
+  children: React.ReactNode
+}) {
+  const authSession = await getSession()
+
+  if (!authSession) {
+    redirect('/welcome')
+  }
+
   return (
-    <FullScreenPage inApp className="flex justify-center items-center">
-      <Header className="flex items-center justify-between p-4 self-start w-full" />
-      {children}
-      <Navbar className="flex items-center justify-between p-4 self-start w-full" />
-    </FullScreenPage>
+    <>
+      <FullScreenPage inApp>
+        <Header currentLocation={'Itajaí, SC'} />
+        {children}
+        <MobileNav user={authSession.user} />
+      </FullScreenPage>
+    </>
   )
 }
