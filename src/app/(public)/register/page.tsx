@@ -1,6 +1,6 @@
 'use client'
 
-import { ArrowRightIcon, AtSignIcon, PhoneIcon, UserIcon } from 'lucide-react'
+import { ArrowRightIcon, AtSignIcon, UserIcon } from 'lucide-react'
 import Link from 'next/link'
 import { useRouter } from 'next/navigation'
 import { useEffect } from 'react'
