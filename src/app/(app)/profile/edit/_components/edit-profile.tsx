@@ -1,27 +1,33 @@
-"use client";
-import { Avatar, AvatarImage } from "@/components/ui/avatar";
-import { Button } from "@/components/ui/button";
+'use client'
+import { Pencil, UserIcon } from 'lucide-react'
+import { useState } from 'react'
+import { useDropzone } from 'react-dropzone'
+
+import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
+import { Button } from '@/components/ui/button'
 import {
   Card,
   CardContent,
   CardFooter,
   CardHeader,
   CardTitle,
-} from "@/components/ui/card";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
-import { Pencil } from "lucide-react";
-import { useState } from "react";
-import { useDropzone } from "react-dropzone";
-import { saveProfileSettings } from "./actions";
+} from '@/components/ui/card'
+import { Input } from '@/components/ui/input'
+import { Label } from '@/components/ui/label'
+import { authClient } from '@/lib/auth-client'
+
+import { saveProfileSettings } from './actions'
 
 function EditProfileTab({ userName }: { userName: string }) {
-  const { getRootProps, getInputProps } = useDropzone();
-  const [name, setName] = useState(userName);
+  const { getRootProps, getInputProps } = useDropzone()
+  const [name, setName] = useState(userName)
+
+  const session = authClient.useSession()
+
   return (
     <form
       onClick={(e) => {
-        e.preventDefault();
+        e.preventDefault()
         saveProfileSettings(name)
       }}
     >
@@ -37,13 +43,13 @@ function EditProfileTab({ userName }: { userName: string }) {
             >
               <input {...getInputProps()} />
               <AvatarImage
-                src={
-                  // user.image ??
-                  "https://icons.veryicon.com/png/o/miscellaneous/rookie-official-icon-gallery/225-default-avatar.png"
-                }
+                src={session.data?.user.image ?? ''}
                 alt="Avatar"
                 className="object-cover w-full h-full"
               />
+              <AvatarFallback>
+                <UserIcon className="size-10" />
+              </AvatarFallback>
               <div className="absolute inset-0 bg-accent-foreground/70 opacity-0 group-hover:opacity-100 flex items-center justify-center transition-opacity">
                 <Pencil className="text-white" />
               </div>
@@ -63,7 +69,7 @@ function EditProfileTab({ userName }: { userName: string }) {
         </CardFooter>
       </Card>
     </form>
-  );
+  )
 }
 
-export default EditProfileTab;
+export default EditProfileTab

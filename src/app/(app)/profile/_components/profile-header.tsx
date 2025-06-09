@@ -1,25 +1,24 @@
-import { Avatar, AvatarImage } from "@/components/ui/avatar";
-import { Button } from "@/components/ui/button";
-import Link from "next/link";
-import { auth } from "@/lib/auth";
-import { authClient } from "@/lib/auth-client";
-import { headers } from "next/headers";
+import { UserIcon } from 'lucide-react'
+import { headers } from 'next/headers'
+import Link from 'next/link'
+
+import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
+import { Button } from '@/components/ui/button'
+import { auth } from '@/lib/auth'
 
 export default async function ProfileHeader() {
   const session = await auth.api.getSession({
     headers: await headers(),
-  });
+  })
   return (
     <header className="space-y-4">
       <div className="flex w-full justify-between gap-4 items-center">
         <div className="flex flex-col items-center justify-center">
           <Avatar className="w-24 h-24">
-            <AvatarImage
-              src={
-                session?.user.image ??
-                "https://icons.veryicon.com/png/o/miscellaneous/rookie-official-icon-gallery/225-default-avatar.png"
-              }
-            />
+            <AvatarImage src={session?.user.image ?? ''} />
+            <AvatarFallback>
+              <UserIcon className="size-10" />
+            </AvatarFallback>
           </Avatar>
         </div>
         <div className="flex gap-4 justify-center w-full text-center">
@@ -43,7 +42,7 @@ export default async function ProfileHeader() {
       </div>
 
       <div className="flex gap-4">
-        <Link href={"profile/edit"} className="flex-1">
+        <Link href={'profile/edit'} className="flex-1">
           <Button variant="accent" size="sm" className="w-full">
             Editar perfil
           </Button>
@@ -53,5 +52,5 @@ export default async function ProfileHeader() {
         </Button>
       </div>
     </header>
-  );
+  )
 }

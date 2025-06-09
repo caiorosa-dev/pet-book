@@ -53,11 +53,22 @@ export default function RegisterFinishPage() {
     handler: async (values) => {
       setStep2Data(values)
 
-      await authClient.signUp.email({
+      const result = await authClient.signUp.email({
         name,
         username,
         phone,
         ...values,
+      })
+
+      if (result.error) {
+        toast.error(result.error.message)
+        throw new Error(result.error.message)
+      }
+
+      await authClient.signIn.email({
+        email: values.email,
+        password: values.password,
+        callbackURL: '/register/welcome',
       })
     },
     onSubmitSuccess: () => {

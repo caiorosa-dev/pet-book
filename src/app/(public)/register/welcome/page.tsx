@@ -37,7 +37,7 @@ export default function RegisterWelcomePage() {
         </div>
 
         <div className="flex justify-center">
-          <img src="/images/welcome.svg" alt="Welcome" className="h-[400px]" />
+          <img src="/images/welcome.svg" alt="Welcome" className="h-[200px]" />
         </div>
 
         <div className="space-y-4">
