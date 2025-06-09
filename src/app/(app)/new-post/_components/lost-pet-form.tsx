@@ -68,7 +68,7 @@ export function LostPetForm({ userPets }: LostPetFormProps) {
                 <SelectTrigger className="w-full">
                   <div className="flex items-center gap-2 w-full">
                     <Dog className="w-4 h-4 text-primary" />
-                    <SelectValue placeholder="Select a verified email to display" />
+                    <SelectValue placeholder="Selecione seu pet" />
                   </div>
                 </SelectTrigger>
               </FormControl>
