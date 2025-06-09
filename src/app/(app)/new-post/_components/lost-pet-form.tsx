@@ -3,7 +3,7 @@
 import { format } from 'date-fns'
 import {
   Calendar as CalendarIcon,
-  Camera,
+  CameraIcon,
   ClipboardIcon,
   Dog,
 } from 'lucide-react'
@@ -20,6 +20,7 @@ import {
   FormMessage,
 } from '@/components/ui/form'
 import { Input } from '@/components/ui/input'
+import { Label } from '@/components/ui/label'
 import {
   Popover,
   PopoverContent,
@@ -155,8 +156,8 @@ export function LostPetForm({ userPets }: LostPetFormProps) {
           <FormItem>
             <FormLabel className="!text-black">Selecione fotos</FormLabel>
             <FormControl>
-              <label className="w-40 h-40 rounded-md border-[3px] border-dashed flex items-center justify-center cursor-pointer hover:bg-muted/50">
-                <Camera className="w-6 h-6 text-muted" />
+              <Label className="inline-flex flex-col justify-center items-center border-[3px] border-dashed rounded-2xl p-4 cursor-pointer h-32 w-32">
+                <CameraIcon className="w-8 h-8 text-primary" />
                 <Input
                   type="file"
                   accept="image/*"
@@ -172,7 +173,7 @@ export function LostPetForm({ userPets }: LostPetFormProps) {
                     setPreviews(filePreviews)
                   }}
                 />
-              </label>
+              </Label>
             </FormControl>
             <FormMessage />
           </FormItem>

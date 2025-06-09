@@ -21,6 +21,7 @@ import {
   FormMessage,
 } from '@/components/ui/form'
 import { Input } from '@/components/ui/input'
+import { Label } from '@/components/ui/label'
 import {
   Popover,
   PopoverContent,
@@ -143,22 +144,24 @@ export function FoundPetForm() {
           <FormItem>
             <FormLabel className="!text-black">Selecione fotos</FormLabel>
             <FormControl>
-              <Input
-                type="file"
-                accept="image/*"
-                multiple
-                icon={CameraIcon}
-                className="hidden"
-                onChange={(e) => {
-                  const files = Array.from(e.target.files || [])
-                  field.onChange(e.target.files)
+              <Label className="inline-flex flex-col justify-center items-center border-[3px] border-dashed rounded-2xl p-4 cursor-pointer h-32 w-32">
+                <CameraIcon className="w-8 h-8 text-primary" />
+                <Input
+                  type="file"
+                  accept="image/*"
+                  multiple
+                  className="hidden"
+                  onChange={(e) => {
+                    const files = Array.from(e.target.files || [])
+                    field.onChange(e.target.files)
 
-                  const filePreviews = files.map((file) =>
-                    URL.createObjectURL(file),
-                  )
-                  setPreviews(filePreviews)
-                }}
-              />
+                    const filePreviews = files.map((file) =>
+                      URL.createObjectURL(file),
+                    )
+                    setPreviews(filePreviews)
+                  }}
+                />
+              </Label>
             </FormControl>
             <FormMessage />
           </FormItem>
