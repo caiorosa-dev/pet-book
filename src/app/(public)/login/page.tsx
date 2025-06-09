@@ -1,117 +1,130 @@
 'use client'
 
+import { ArrowRightIcon, AtSignIcon, LockIcon } from 'lucide-react'
 import Link from 'next/link'
 import { useRouter } from 'next/navigation'
-import { useState } from 'react'
+import { toast } from 'sonner'
+import { z } from 'zod'
 
-import { Button } from '@/components/ui/button'
+import { Button, ButtonIcon } from '@/components/ui/button'
+import {
+  Form,
+  FormControl,
+  FormField,
+  FormItem,
+  FormLabel,
+  FormMessage,
+} from '@/components/ui/form'
 import { Input } from '@/components/ui/input'
-import { Label } from '@/components/ui/label'
+import { useClientForm } from '@/hooks/use-client-form'
 import { authClient } from '@/lib/auth-client'
+
+const loginSchema = z.object({
+  email: z.string().email('Email inválido'),
+  password: z.string().min(6, 'Senha deve ter pelo menos 6 caracteres'),
+})
 
 export default function LoginPage() {
   const router = useRouter()
-  const [email, setEmail] = useState('')
-  const [password, setPassword] = useState('')
-  const [error, setError] = useState<string | null>(null)
-  const [isLoading, setIsLoading] = useState(false)
 
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault()
-    setError(null)
-    setIsLoading(true)
+  const form = useClientForm({
+    schema: loginSchema,
+    defaultValues: {
+      email: '',
+      password: '',
+    },
+    handler: async (values) => {
+      const result = await authClient.signIn.email({
+        email: values.email,
+        password: values.password,
+      })
 
-    try {
-      const result = await authClient.signIn.email(
-        {
-          email,
-          password,
-          callbackURL: '/',
-        },
-        {
-          onRequest: () => setIsLoading(true),
-          onSuccess: () => {
-            setIsLoading(false)
-            router.push('/')
-            router.refresh()
-          },
-        },
-      )
-
-      if (result?.error) {
-        setError('Invalid email or password')
-        setIsLoading(false)
-        return
+      if (result.error) {
+        throw new Error(result.error.message)
       }
-
+    },
+    onSubmitSuccess: () => {
       router.push('/')
       router.refresh()
-    } catch (error) {
-      setError('Something went wrong. Please try again.')
-      setIsLoading(false)
-    }
-  }
+    },
+    onSubmitError: () => {
+      toast.error('Email ou senha inválidos')
+    },
+  })
 
   return (
     <div className="flex min-h-screen items-center justify-center px-4 py-12 sm:px-6 lg:px-8">
       <div className="w-full max-w-md space-y-8">
         <div className="text-center">
           <h1 className="text-3xl font-bold tracking-tight">
-            Login to PetBook
+            Bem vindo novamente
           </h1>
-          <p className="mt-2 text-sm text-gray-600">
-            Enter your credentials to access your account
+          <p className="mt-6 text-slate-600">
+            Para entrar, nos informe o email e a senha para entrar na conta.
           </p>
         </div>
-        <form className="mt-8 space-y-6" onSubmit={handleSubmit}>
+        <Form {...form} className="mt-8 space-y-6">
           <div className="space-y-4">
-            <div className="space-y-2">
-              <Label htmlFor="email">Email</Label>
-              <Input
-                id="email"
-                name="email"
-                type="email"
-                autoComplete="email"
-                required
-                placeholder="name@example.com"
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
-              />
-            </div>
-            <div className="space-y-2">
-              <div className="flex items-center justify-between">
-                <Label htmlFor="password">Password</Label>
-              </div>
-              <Input
-                id="password"
-                name="password"
-                type="password"
-                autoComplete="current-password"
-                required
-                value={password}
-                onChange={(e) => setPassword(e.target.value)}
-              />
-            </div>
+            <FormField
+              control={form.control}
+              name="email"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Seu email</FormLabel>
+                  <FormControl>
+                    <Input
+                      {...field}
+                      type="email"
+                      autoComplete="email"
+                      placeholder="marty.mcfly@gmail.com"
+                      icon={AtSignIcon}
+                    />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+            <FormField
+              control={form.control}
+              name="password"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Sua senha</FormLabel>
+                  <FormControl>
+                    <Input
+                      {...field}
+                      type="password"
+                      autoComplete="current-password"
+                      icon={LockIcon}
+                    />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+            <Button
+              type="submit"
+              className="w-full"
+              size="rounded"
+              disabled={form.isSubmitting}
+            >
+              {form.isSubmitting ? 'Entrando...' : 'Entrar no Petbook'}
+              <ButtonIcon icon={ArrowRightIcon} isLoading={form.isSubmitting} />
+            </Button>
           </div>
-
-          {error && (
-            <div className="text-sm text-red-500 font-medium">{error}</div>
+          {form.error && (
+            <div className="text-sm text-red-500 font-medium">{form.error}</div>
           )}
-
-          <Button type="submit" className="w-full" disabled={isLoading}>
-            {isLoading ? 'Signing in...' : 'Sign in'}
-          </Button>
-
           <div className="text-center text-sm">
-            <span className="text-gray-600">Don&apos;t have an account?</span>{' '}
+            <span className="text-gray-600">Não tem uma conta?</span>{' '}
             <Link
               href="/register"
               className="font-medium text-primary hover:underline"
             >
-              Register
+              Registrar
             </Link>
           </div>
-        </form>
+        </Form>
       </div>
     </div>
   )
