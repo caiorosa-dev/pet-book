@@ -2,7 +2,7 @@
 
 import { z } from 'zod'
 
-import { formSchema, LostPetForm } from './_lost-pet-form'
+import { formSchema, LostPetForm } from '../_components/lost-pet-form'
 
 export default function CreatePostPage() {
   function onSubmit(values: z.infer<typeof formSchema>) {

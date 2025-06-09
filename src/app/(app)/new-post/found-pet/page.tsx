@@ -1,25 +1,8 @@
 'use client'
 
-import { z } from 'zod'
-
-import { formSchema, PetForm } from './_found-pet-form'
+import { PetForm } from '../_components/found-pet-form'
 
 export default function CreatePostPage() {
-  function onSubmit(values: z.infer<typeof formSchema>) {
-    console.log(values)
-    try {
-      // axios({
-      //   method: 'post',
-      //   url: '/post/found-pet/new',
-      //   data: {
-      //     ...values,
-      //   },
-      // })
-    } catch (error) {
-      console.log(error)
-    }
-  }
-
   return (
     <>
       <div className="max-w-xl w-full mx-auto h-full flex flex-col gap-10">
@@ -31,7 +14,7 @@ export default function CreatePostPage() {
           comunidade a encontrar seu pet.
         </p>
         <div className="py-4">
-          <PetForm onSubmit={onSubmit} />
+          <PetForm />
         </div>
       </div>
     </>
