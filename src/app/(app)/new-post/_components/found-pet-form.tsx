@@ -47,7 +47,7 @@ export function FoundPetForm() {
     <Form {...form} className="space-y-6">
       <FormField
         control={form.control}
-        name="species"
+        name="animalSpecies"
         render={({ field }) => (
           <FormItem>
             <FormLabel className="!text-black">
@@ -62,7 +62,7 @@ export function FoundPetForm() {
       />
       <FormField
         control={form.control}
-        name="breed"
+        name="animalBreed"
         render={({ field }) => (
           <FormItem>
             <FormLabel className="!text-black">
@@ -77,7 +77,7 @@ export function FoundPetForm() {
       />
       <FormField
         control={form.control}
-        name="datetimeLastSeen"
+        name="lastSeenDate"
         render={({ field }) => (
           <FormItem>
             <FormLabel className="!text-black">
@@ -120,7 +120,7 @@ export function FoundPetForm() {
       />
       <FormField
         control={form.control}
-        name="description"
+        name="petDescription"
         render={({ field }) => (
           <FormItem>
             <FormLabel className="!text-black">
@@ -139,7 +139,7 @@ export function FoundPetForm() {
       />
       <FormField
         control={form.control}
-        name="images"
+        name="photos"
         render={({ field }) => (
           <FormItem>
             <FormLabel className="!text-black">Selecione fotos</FormLabel>
