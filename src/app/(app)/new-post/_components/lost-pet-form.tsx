@@ -88,7 +88,7 @@ export function LostPetForm({ userPets }: LostPetFormProps) {
       />
       <FormField
         control={form.control}
-        name="datetimeLastSeen"
+        name="lastSeenDate"
         render={({ field }) => (
           <FormItem>
             <FormLabel className="!text-black">
@@ -131,7 +131,7 @@ export function LostPetForm({ userPets }: LostPetFormProps) {
       />
       <FormField
         control={form.control}
-        name="lastTimeSeenDescription"
+        name="petDescription"
         render={({ field }) => (
           <FormItem>
             <FormLabel className="!text-black">
@@ -152,7 +152,7 @@ export function LostPetForm({ userPets }: LostPetFormProps) {
       />
       <FormField
         control={form.control}
-        name="images"
+        name="photos"
         render={({ field }) => (
           <FormItem>
             <FormLabel className="!text-black">Selecione fotos</FormLabel>

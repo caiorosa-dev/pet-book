@@ -22,6 +22,9 @@ model User {
 
   accounts Account[]
   sessions Session[]
+  posts    Post[]
+  Comment  Comment[]
+  Like     Like[]
 
   @@map("users")
 }
@@ -73,4 +76,53 @@ model Verification {
   updatedAt  DateTime @updatedAt @map("updated_at")
 
   @@map("verifications")
+}
+
+model Post {
+  id               String   @id @default(uuid())
+  userId           String   @map("user_id")
+  petId            String?  @map("pet_id")
+  lastSeenDate     DateTime @map("last_seen_date")
+  lastSeenLocation String   @map("last_seen_location")
+  photos           String[] @map("photos")
+  type             String   @map("type")
+  animalSpecies    String   @map("animal_species")
+  animalBreed      String   @map("animal_breed")
+  petDescription   String   @map("pet_description")
+
+  user     User?     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  pet      Pet?      @relation(fields: [petId], references: [id], onDelete: Cascade)
+  comments Comment[]
+  likes    Like[]
+}
+
+model Pet {
+  id              String   @id @default(uuid())
+  name            String
+  photos          String[]
+  species         String
+  breed           String
+  characteristics String
+  posts           Post[]
+}
+
+model Comment {
+  id        String   @id @default(uuid())
+  postId    String
+  authorId  String
+  content   String
+  timestamp DateTime @default(now())
+
+  post   Post @relation(fields: [postId], references: [id], onDelete: Cascade)
+  author User @relation(fields: [authorId], references: [id], onDelete: Cascade)
+}
+
+model Like {
+  id        String   @id @default(uuid())
+  postId    String
+  userId    String
+  timestamp DateTime @default(now())
+
+  post Post @relation(fields: [postId], references: [id], onDelete: Cascade)
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
 }
