@@ -8,10 +8,10 @@ import { Card, CardContent, CardFooter } from '@/components/ui/card'
 export default function CreatePostPage() {
   return (
     <>
-      <div className="max-w-xl w-full mx-auto h-full flex flex-col gap-10">
+      <div className="max-w-xl w-full mx-auto h-full flex flex-col gap-10 items-center">
         <h1 className="text-3xl font-bold text-center">Novo conteúdo</h1>
         <p className="text-center text-secondary-foreground">
-          Informe as informações de seu pet para começar a posta com ele
+          Informe as informações de seu pet para começar a postar com ele.
         </p>
 
         <Card className="items-center">

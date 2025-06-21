@@ -8,6 +8,7 @@ import {
   ClipboardIcon,
   DogIcon,
 } from 'lucide-react'
+import Image from 'next/image'
 import React, { useState } from 'react'
 
 import { Button } from '@/components/ui/button'
@@ -28,18 +29,24 @@ import {
   PopoverTrigger,
 } from '@/components/ui/popover'
 import { Textarea } from '@/components/ui/textarea'
-import { useClientForm } from '@/hooks/use-client-form'
+import { useActionForm } from '@/hooks/use-action-form'
 import { cn } from '@/lib/utils'
 
+import { createFoundPetPost } from '../actions'
 import { foundPetSchema } from '../schema'
 
 export function FoundPetForm() {
   const [previews, setPreviews] = useState<string[]>([])
 
-  const form = useClientForm({
+  const form = useActionForm({
     schema: foundPetSchema,
-    handler: (data) => {
-      console.log(data)
+    action: createFoundPetPost,
+    defaultValues: {
+      breed: '',
+      datetimeLastSeen: new Date(),
+      description: '',
+      images: [],
+      species: '',
     },
   })
 
@@ -144,30 +151,47 @@ export function FoundPetForm() {
           <FormItem>
             <FormLabel className="!text-black">Selecione fotos</FormLabel>
             <FormControl>
-              <Label className="inline-flex flex-col justify-center items-center border-[3px] border-dashed rounded-2xl p-4 cursor-pointer h-32 w-32">
-                <CameraIcon className="w-8 h-8 text-primary" />
-                <Input
-                  type="file"
-                  accept="image/*"
-                  multiple
-                  className="hidden"
-                  onChange={(e) => {
-                    const files = Array.from(e.target.files || [])
-                    field.onChange(e.target.files)
+              <div className="flex gap-4 flex-wrap">
+                {previews.map((src, idx) => (
+                  <Image
+                    key={idx}
+                    src={src}
+                    alt={`Preview ${idx + 1}`}
+                    width={24}
+                    height={24}
+                    className="w-32 h-32 object-cover rounded-xl border"
+                  />
+                ))}
 
-                    const filePreviews = files.map((file) =>
-                      URL.createObjectURL(file),
-                    )
-                    setPreviews(filePreviews)
-                  }}
-                />
-              </Label>
+                <Label className="inline-flex flex-col justify-center items-center border-[3px] border-dashed rounded-2xl p-4 cursor-pointer h-32 w-32">
+                  <CameraIcon className="w-8 h-8 text-primary" />
+                  <Input
+                    type="file"
+                    accept="image/*"
+                    multiple
+                    className="hidden"
+                    onChange={(e) => {
+                      const files = Array.from(e.target.files || [])
+
+                      // create URLs for previews
+                      const filePreviews = files.map((file) =>
+                        URL.createObjectURL(file),
+                      )
+
+                      // Update your previews state with new previews
+                      setPreviews((prev) => [...prev, ...filePreviews])
+
+                      // Update form field value with all preview URLs (not the FileList)
+                      field.onChange([...previews, ...filePreviews])
+                    }}
+                  />
+                </Label>
+              </div>
             </FormControl>
             <FormMessage />
           </FormItem>
         )}
       />
-      {previews}
       <Button className="w-full" size="rounded" type="submit">
         Criar post
       </Button>
