@@ -54,6 +54,50 @@ export async function deletePetPhoto(s3Key: string): Promise<void> {
   await s3Client.send(command)
 }
 
+export async function uploadProfilePhoto(
+  file: Buffer,
+  originalFilename: string,
+  mimeType: string,
+  userId: string,
+): Promise<UploadPhotoResult> {
+  const photoId = uuidv4()
+  const fileExtension = getFileExtension(originalFilename, mimeType)
+  const filename = `${photoId}.${fileExtension}`
+  const s3Key = `profiles/${userId}/${filename}`
+
+  const command = new PutObjectCommand({
+    Bucket: S3_BUCKET_NAME,
+    Key: s3Key,
+    Body: file,
+    ContentType: mimeType,
+    Metadata: {
+      originalFilename,
+      photoId,
+      userId,
+    },
+  })
+
+  await s3Client.send(command)
+
+  const s3Url = `${process.env.S3_ENDPOINT}/${S3_BUCKET_NAME}/${s3Key}`
+
+  return {
+    photoId,
+    s3Key,
+    s3Url,
+    filename,
+  }
+}
+
+export async function deleteProfilePhoto(s3Key: string): Promise<void> {
+  const command = new DeleteObjectCommand({
+    Bucket: S3_BUCKET_NAME,
+    Key: s3Key,
+  })
+
+  await s3Client.send(command)
+}
+
 function getFileExtension(filename: string, mimeType: string): string {
   // Primeiro tenta extrair a extensão do nome do arquivo
   const extensionFromFilename = filename.split('.').pop()?.toLowerCase()
