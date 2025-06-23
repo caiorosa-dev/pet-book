@@ -1,4 +1,12 @@
-import type { Comment, Like, Pet, PetPhoto, Post, User } from '@/generated'
+import type {
+  Comment,
+  Like,
+  Pet,
+  PetPhoto,
+  Post,
+  PostPhoto,
+  User,
+} from '@/generated'
 
 export interface PetWithRelations extends Omit<Pet, 'photos'> {
   owner?: User
@@ -8,6 +16,7 @@ export interface PetWithRelations extends Omit<Pet, 'photos'> {
 export interface PostWithRelations extends Post {
   likes: Like[]
   comments: Comment[]
+  photos: PostPhoto[]
   pet?: Pet | null
   user?: User | null
 }
@@ -19,6 +28,10 @@ export interface UserWithRelations extends User {
 
 export interface PetPhotoWithRelations extends PetPhoto {
   pet?: Pet
+}
+
+export interface PostPhotoWithRelations extends PostPhoto {
+  post?: Post
 }
 
 export interface UserStats {

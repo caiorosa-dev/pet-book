@@ -1,8 +1,9 @@
-'use client'
-
+import { getUserPets } from '../../profile/new-pet/actions'
 import { LostPetForm } from '../_components/lost-pet-form'
 
-export default function CreateLostPetPostPage() {
+export default async function CreateLostPetPostPage() {
+  const userPets = await getUserPets()
+
   return (
     <>
       <div className="max-w-xl w-full mx-auto h-full flex flex-col gap-10">
@@ -14,7 +15,7 @@ export default function CreateLostPetPostPage() {
           comunidade a encontrar seu pet.
         </p>
         <div className="py-4">
-          <LostPetForm userPets={[]} />
+          <LostPetForm userPets={userPets} />
         </div>
       </div>
     </>

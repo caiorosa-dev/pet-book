@@ -7,9 +7,12 @@ import {
   CameraIcon,
   ClipboardIcon,
   DogIcon,
+  Loader2,
+  X,
 } from 'lucide-react'
 import Image from 'next/image'
 import React, { useState } from 'react'
+import { toast } from 'sonner'
 
 import { Button } from '@/components/ui/button'
 import { Calendar } from '@/components/ui/calendar'
@@ -30,38 +33,84 @@ import {
 } from '@/components/ui/popover'
 import { Textarea } from '@/components/ui/textarea'
 import { useActionForm } from '@/hooks/use-action-form'
+import { processImageFiles } from '@/lib/image-utils'
 import { cn } from '@/lib/utils'
 
 import { createFoundPetPost } from '../actions'
-import { foundPetSchema } from '../schema'
+import { foundPetSchema, type PhotoData } from '../schema'
 
 export function FoundPetForm() {
-  const [previews, setPreviews] = useState<string[]>([])
+  const [photos, setPhotos] = useState<PhotoData[]>([])
+  const [photoLoading, setPhotoLoading] = useState(false)
 
   const form = useActionForm({
     schema: foundPetSchema,
-    action: createFoundPetPost,
+    action: async (data) => {
+      if (photos.length === 0) {
+        toast.error('Adicione pelo menos uma foto do post')
+        throw new Error('Pelo menos uma foto é obrigatória')
+      }
+
+      return createFoundPetPost(data, photos)
+    },
     defaultValues: {
-      breed: '',
-      datetimeLastSeen: new Date(),
-      description: '',
-      images: [],
-      species: '',
+      animalSpecies: '',
+      animalBreed: '',
+      lastSeenDate: new Date(),
+      petDescription: '',
+    },
+    onSubmitError: (error) => {
+      toast.error(error?.message || 'Erro ao criar post')
+    },
+    onSubmitSuccess: () => {
+      toast.success('Post criado com sucesso!')
     },
   })
 
+  async function handlePhotoChange(e: React.ChangeEvent<HTMLInputElement>) {
+    const files = Array.from(e.target.files || [])
+
+    if (files.length === 0) return
+
+    // Verificar se não excede o limite de 5 fotos
+    if (photos.length + files.length > 5) {
+      toast.error('Você pode adicionar no máximo 5 fotos')
+      return
+    }
+
+    setPhotoLoading(true)
+
+    try {
+      const processedPhotos = await processImageFiles(files)
+      setPhotos((prev) => [...prev, ...processedPhotos])
+    } catch (error) {
+      if (error instanceof Error) {
+        toast.error(error.message)
+      } else {
+        toast.error('Erro ao processar imagens')
+      }
+    } finally {
+      setPhotoLoading(false)
+    }
+
+    // Limpar o input
+    e.target.value = ''
+  }
+
+  function removePhoto(photoId: string) {
+    setPhotos((prev) => prev.filter((photo) => photo.id !== photoId))
+  }
+
   return (
-    <Form {...form} className="space-y-6">
+    <Form {...form}>
       <FormField
         control={form.control}
         name="animalSpecies"
         render={({ field }) => (
           <FormItem>
-            <FormLabel className="!text-black">
-              Qual a espécie encontrada?
-            </FormLabel>
+            <FormLabel className="!text-black">Espécie do animal</FormLabel>
             <FormControl>
-              <Input {...field} placeholder="Cachorro" icon={DogIcon} />
+              <Input placeholder="Cachorro" icon={DogIcon} {...field} />
             </FormControl>
             <FormMessage />
           </FormItem>
@@ -72,11 +121,9 @@ export function FoundPetForm() {
         name="animalBreed"
         render={({ field }) => (
           <FormItem>
-            <FormLabel className="!text-black">
-              Qual a raça do pet encontrado?
-            </FormLabel>
+            <FormLabel className="!text-black">Raça do animal</FormLabel>
             <FormControl>
-              <Input placeholder="Husky" {...field} icon={BoneIcon} />
+              <Input placeholder="Husky" icon={BoneIcon} {...field} />
             </FormControl>
             <FormMessage />
           </FormItem>
@@ -88,7 +135,7 @@ export function FoundPetForm() {
         render={({ field }) => (
           <FormItem>
             <FormLabel className="!text-black">
-              Aonde foi visto por último?
+              Quando você encontrou esse pet?
             </FormLabel>
             <Popover>
               <PopoverTrigger asChild>
@@ -96,16 +143,16 @@ export function FoundPetForm() {
                   <Button
                     variant="outline"
                     className={cn(
-                      'w-full text-left font-normal justify-start gap-2',
-                      !field.value && 'text-muted',
+                      'w-full pl-3 text-left font-normal',
+                      !field.value && 'text-muted-foreground',
                     )}
                   >
-                    <CalendarIcon className="h-4 w-4 text-primary" />
                     {field.value ? (
-                      format(field.value, 'PPP')
+                      format(field.value, 'dd/MM/yyyy')
                     ) : (
                       <span>Selecione uma data</span>
                     )}
+                    <CalendarIcon className="ml-auto h-4 w-4 opacity-50" />
                   </Button>
                 </FormControl>
               </PopoverTrigger>
@@ -117,7 +164,7 @@ export function FoundPetForm() {
                   disabled={(date) =>
                     date > new Date() || date < new Date('1900-01-01')
                   }
-                  captionLayout="dropdown"
+                  initialFocus
                 />
               </PopoverContent>
             </Popover>
@@ -144,54 +191,59 @@ export function FoundPetForm() {
           </FormItem>
         )}
       />
-      <FormField
-        control={form.control}
-        name="photos"
-        render={({ field }) => (
-          <FormItem>
-            <FormLabel className="!text-black">Selecione fotos</FormLabel>
-            <FormControl>
-              <div className="flex gap-4 flex-wrap">
-                {previews.map((src, idx) => (
-                  <Image
-                    key={idx}
-                    src={src}
-                    alt={`Preview ${idx + 1}`}
-                    width={24}
-                    height={24}
-                    className="w-32 h-32 object-cover rounded-xl border"
-                  />
-                ))}
 
-                <Label className="inline-flex flex-col justify-center items-center border-[3px] border-dashed rounded-2xl p-4 cursor-pointer h-32 w-32">
+      <div>
+        <FormLabel className="!text-black">Fotos do pet</FormLabel>
+        <div className="flex gap-4 flex-wrap mt-2">
+          {photos.map((photo) => (
+            <div key={photo.id} className="relative">
+              <Image
+                src={photo.preview}
+                alt={photo.filename}
+                width={128}
+                height={128}
+                className="w-32 h-32 object-cover rounded-xl border"
+              />
+              <Button
+                type="button"
+                variant="destructive"
+                size="icon"
+                className="absolute -top-2 -right-2 h-6 w-6"
+                onClick={() => removePhoto(photo.id)}
+              >
+                <X className="h-4 w-4" />
+              </Button>
+            </div>
+          ))}
+
+          {photos.length < 5 && (
+            <label className="w-32 h-32 flex flex-col items-center justify-center border-[3px] border-dashed rounded-2xl cursor-pointer hover:bg-accent transition">
+              {photoLoading ? (
+                <Loader2 className="animate-spin text-muted" size={32} />
+              ) : (
+                <>
                   <CameraIcon className="w-8 h-8 text-primary" />
-                  <Input
-                    type="file"
-                    accept="image/*"
-                    multiple
-                    className="hidden"
-                    onChange={(e) => {
-                      const files = Array.from(e.target.files || [])
+                  <p className="text-xs text-muted mt-1">
+                    Foto {photos.length + 1}
+                  </p>
+                </>
+              )}
+              <Input
+                type="file"
+                accept="image/*"
+                multiple
+                className="hidden"
+                onChange={handlePhotoChange}
+                disabled={photoLoading}
+              />
+            </label>
+          )}
+        </div>
+        <p className="text-xs text-muted-foreground mt-2">
+          Suportado: JPEG, PNG, WebP. Máximo 5 fotos, 10MB cada.
+        </p>
+      </div>
 
-                      // create URLs for previews
-                      const filePreviews = files.map((file) =>
-                        URL.createObjectURL(file),
-                      )
-
-                      // Update your previews state with new previews
-                      setPreviews((prev) => [...prev, ...filePreviews])
-
-                      // Update form field value with all preview URLs (not the FileList)
-                      field.onChange([...previews, ...filePreviews])
-                    }}
-                  />
-                </Label>
-              </div>
-            </FormControl>
-            <FormMessage />
-          </FormItem>
-        )}
-      />
       <Button className="w-full" size="rounded" type="submit">
         Criar post
       </Button>

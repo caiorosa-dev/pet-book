@@ -85,16 +85,35 @@ model Post {
   petId            String?  @map("pet_id")
   lastSeenDate     DateTime @map("last_seen_date")
   lastSeenLocation String   @map("last_seen_location")
-  photos           String[] @map("photos")
   type             String   @map("type")
   animalSpecies    String   @map("animal_species")
   animalBreed      String   @map("animal_breed")
   petDescription   String   @map("pet_description")
+  createdAt        DateTime @default(now()) @map("created_at")
+  updatedAt        DateTime @updatedAt @map("updated_at")
 
-  user     User?     @relation(fields: [userId], references: [id], onDelete: Cascade)
-  pet      Pet?      @relation(fields: [petId], references: [id], onDelete: Cascade)
+  user     User?       @relation(fields: [userId], references: [id], onDelete: Cascade)
+  pet      Pet?        @relation(fields: [petId], references: [id], onDelete: Cascade)
+  photos   PostPhoto[]
   comments Comment[]
   likes    Like[]
+
+  @@map("posts")
+}
+
+model PostPhoto {
+  id        String   @id @default(uuid())
+  postId    String   @map("post_id")
+  filename  String
+  s3Key     String   @map("s3_key")
+  s3Url     String   @map("s3_url")
+  order     Int      @default(0)
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+
+  post Post @relation(fields: [postId], references: [id], onDelete: Cascade)
+
+  @@map("post_photos")
 }
 
 model Pet {

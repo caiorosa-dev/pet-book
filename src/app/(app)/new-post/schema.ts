@@ -4,7 +4,6 @@ export const lostPetSchema = z.object({
   pet: z.string(),
   lastSeenDate: z.date(),
   petDescription: z.string(),
-  photos: z.array(z.string()).optional(),
 })
 
 export const foundPetSchema = z.object({
@@ -12,5 +11,15 @@ export const foundPetSchema = z.object({
   animalBreed: z.string(),
   lastSeenDate: z.date(),
   petDescription: z.string(),
-  photos: z.array(z.string()).optional(),
 })
+
+// Schema para dados de foto
+export const photoDataSchema = z.object({
+  id: z.string(),
+  file: z.string(), // base64
+  filename: z.string(),
+  mimeType: z.string(),
+  preview: z.string(),
+})
+
+export type PhotoData = z.infer<typeof photoDataSchema>

@@ -5,10 +5,13 @@ import {
   Calendar as CalendarIcon,
   CameraIcon,
   ClipboardIcon,
-  Dog,
+  Loader2,
+  X,
 } from 'lucide-react'
 import Image from 'next/image'
-import React, { useState } from 'react'
+import React, { useEffect, useState } from 'react'
+import { useWatch } from 'react-hook-form'
+import { toast } from 'sonner'
 
 import { Button } from '@/components/ui/button'
 import { Calendar } from '@/components/ui/calendar'
@@ -36,48 +39,111 @@ import {
 } from '@/components/ui/select'
 import { Textarea } from '@/components/ui/textarea'
 import { useActionForm } from '@/hooks/use-action-form'
+import { processImageFiles } from '@/lib/image-utils'
 import { cn } from '@/lib/utils'
+import type { PetWithRelations } from '@/types/database'
 
 import { createLostPetPost } from '../actions'
-import { lostPetSchema } from '../schema'
+import { lostPetSchema, type PhotoData } from '../schema'
 
-export type LostPetFormProps = {
-  userPets: {
-    id: string
-    name: string
-  }[]
+interface LostPetFormProps {
+  userPets: PetWithRelations[]
 }
 
 export function LostPetForm({ userPets }: LostPetFormProps) {
-  const [previews, setPreviews] = useState<string[]>([])
+  const [extraPhotos, setExtraPhotos] = useState<PhotoData[]>([])
+  const [photoLoading, setPhotoLoading] = useState(false)
+  const [selectedPet, setSelectedPet] = useState<PetWithRelations | null>(null)
 
   const form = useActionForm({
     schema: lostPetSchema,
-    action: createLostPetPost,
+    action: async (data) => {
+      // Não é obrigatório ter fotos extras se o pet já tem fotos
+      return createLostPetPost(data, extraPhotos)
+    },
+    defaultValues: {
+      pet: '',
+      lastSeenDate: new Date(),
+      petDescription: '',
+    },
+    onSubmitError: (error) => {
+      toast.error(error?.message || 'Erro ao criar post')
+    },
+    onSubmitSuccess: () => {
+      toast.success('Post criado com sucesso!')
+    },
   })
 
+  // Watch para mudanças no campo pet
+  const watchedPetId = useWatch({
+    control: form.control,
+    name: 'pet',
+  })
+
+  // Quando um pet é selecionado, carregamos suas informações
+  useEffect(() => {
+    if (watchedPetId) {
+      const pet = userPets.find((p) => p.id === watchedPetId)
+      setSelectedPet(pet || null)
+    } else {
+      setSelectedPet(null)
+    }
+  }, [watchedPetId, userPets])
+
+  async function handlePhotoChange(e: React.ChangeEvent<HTMLInputElement>) {
+    const files = Array.from(e.target.files || [])
+
+    if (files.length === 0) return
+
+    // Verificar se não excede o limite de 5 fotos extras
+    if (extraPhotos.length + files.length > 5) {
+      toast.error('Você pode adicionar no máximo 5 fotos extras')
+      return
+    }
+
+    setPhotoLoading(true)
+
+    try {
+      const processedPhotos = await processImageFiles(files)
+      setExtraPhotos((prev) => [...prev, ...processedPhotos])
+    } catch (error) {
+      if (error instanceof Error) {
+        toast.error(error.message)
+      } else {
+        toast.error('Erro ao processar imagens')
+      }
+    } finally {
+      setPhotoLoading(false)
+    }
+
+    // Limpar o input
+    e.target.value = ''
+  }
+
+  function removeExtraPhoto(photoId: string) {
+    setExtraPhotos((prev) => prev.filter((photo) => photo.id !== photoId))
+  }
+
   return (
-    <Form {...form} className="space-y-6">
+    <Form {...form}>
       <FormField
         control={form.control}
         name="pet"
         render={({ field }) => (
           <FormItem>
-            <FormLabel className="!text-black">Qual pet você perdeu</FormLabel>
+            <FormLabel className="!text-black">
+              Selecione o pet perdido
+            </FormLabel>
             <Select onValueChange={field.onChange} defaultValue={field.value}>
               <FormControl>
-                <SelectTrigger className="w-full">
-                  <div className="flex items-center gap-2 w-full">
-                    <Dog className="w-4 h-4 text-primary" />
-                    <SelectValue placeholder="Selecione seu pet" />
-                  </div>
+                <SelectTrigger>
+                  <SelectValue placeholder="Selecione um pet" />
                 </SelectTrigger>
               </FormControl>
               <SelectContent>
-                <SelectItem value="pretinha">Pretinha</SelectItem>
                 {userPets.map((pet) => (
                   <SelectItem key={pet.id} value={pet.id}>
-                    {pet.name}
+                    {pet.name} - {pet.species}
                   </SelectItem>
                 ))}
               </SelectContent>
@@ -86,13 +152,40 @@ export function LostPetForm({ userPets }: LostPetFormProps) {
           </FormItem>
         )}
       />
+
+      {/* Mostrar fotos do pet selecionado */}
+      {selectedPet && selectedPet.photos.length > 0 && (
+        <div>
+          <FormLabel className="!text-black">
+            Fotos do {selectedPet.name}
+          </FormLabel>
+          <div className="flex gap-4 flex-wrap mt-2">
+            {selectedPet.photos.map((photo) => (
+              <div key={photo.id} className="relative">
+                <Image
+                  src={photo.s3Url}
+                  alt={photo.filename}
+                  width={128}
+                  height={128}
+                  className="w-32 h-32 object-cover rounded-xl border"
+                />
+              </div>
+            ))}
+          </div>
+          <p className="text-xs text-muted-foreground mt-2">
+            Estas fotos do {selectedPet.name} serão incluídas automaticamente no
+            post.
+          </p>
+        </div>
+      )}
+
       <FormField
         control={form.control}
         name="lastSeenDate"
         render={({ field }) => (
           <FormItem>
             <FormLabel className="!text-black">
-              Quando foi visto por último
+              Quando foi visto por último?
             </FormLabel>
             <Popover>
               <PopoverTrigger asChild>
@@ -100,16 +193,16 @@ export function LostPetForm({ userPets }: LostPetFormProps) {
                   <Button
                     variant="outline"
                     className={cn(
-                      'w-full text-left font-normal justify-start gap-2', // <-- ajuste aqui
-                      !field.value && 'text-muted',
+                      'w-full pl-3 text-left font-normal',
+                      !field.value && 'text-muted-foreground',
                     )}
                   >
-                    <CalendarIcon className="h-4 w-4 text-primary" />
                     {field.value ? (
-                      format(field.value, 'PPP')
+                      format(field.value, 'dd/MM/yyyy')
                     ) : (
                       <span>Selecione uma data</span>
                     )}
+                    <CalendarIcon className="ml-auto h-4 w-4 opacity-50" />
                   </Button>
                 </FormControl>
               </PopoverTrigger>
@@ -121,7 +214,7 @@ export function LostPetForm({ userPets }: LostPetFormProps) {
                   disabled={(date) =>
                     date > new Date() || date < new Date('1900-01-01')
                   }
-                  captionLayout="dropdown"
+                  initialFocus
                 />
               </PopoverContent>
             </Popover>
@@ -135,70 +228,74 @@ export function LostPetForm({ userPets }: LostPetFormProps) {
         render={({ field }) => (
           <FormItem>
             <FormLabel className="!text-black">
-              Aonde foi visto por último?
+              Descreva mais detalhes sobre o pet
             </FormLabel>
             <FormControl>
-              <div className="relative">
-                <Textarea
-                  icon={ClipboardIcon}
-                  placeholder="Eu vi ele por último na Rua Graça N 295, quem ver ele por favor me chama aqui pela plataforma 😫"
-                  {...field}
-                />
-              </div>
+              <Textarea
+                placeholder="Última localização, comportamento específico, etc."
+                icon={ClipboardIcon}
+                {...field}
+              />
             </FormControl>
             <FormMessage />
           </FormItem>
         )}
       />
-      <FormField
-        control={form.control}
-        name="photos"
-        render={({ field }) => (
-          <FormItem>
-            <FormLabel className="!text-black">Selecione fotos</FormLabel>
-            <FormControl>
-              <div className="flex gap-4 flex-wrap">
-                {previews.map((src, idx) => (
-                  <Image
-                    key={idx}
-                    src={src}
-                    alt={`Preview ${idx + 1}`}
-                    width={24}
-                    height={24}
-                    className="w-32 h-32 object-cover rounded-xl border"
-                  />
-                ))}
 
-                <Label className="inline-flex flex-col justify-center items-center border-[3px] border-dashed rounded-2xl p-4 cursor-pointer h-32 w-32">
+      {/* Fotos extras */}
+      <div>
+        <FormLabel className="!text-black">Fotos extras (opcional)</FormLabel>
+        <div className="flex gap-4 flex-wrap mt-2">
+          {extraPhotos.map((photo) => (
+            <div key={photo.id} className="relative">
+              <Image
+                src={photo.preview}
+                alt={photo.filename}
+                width={128}
+                height={128}
+                className="w-32 h-32 object-cover rounded-xl border"
+              />
+              <Button
+                type="button"
+                variant="destructive"
+                size="icon"
+                className="absolute -top-2 -right-2 h-6 w-6"
+                onClick={() => removeExtraPhoto(photo.id)}
+              >
+                <X className="h-4 w-4" />
+              </Button>
+            </div>
+          ))}
+
+          {extraPhotos.length < 5 && (
+            <label className="w-32 h-32 flex flex-col items-center justify-center border-[3px] border-dashed rounded-2xl cursor-pointer hover:bg-accent transition">
+              {photoLoading ? (
+                <Loader2 className="animate-spin text-muted" size={32} />
+              ) : (
+                <>
                   <CameraIcon className="w-8 h-8 text-primary" />
-                  <Input
-                    type="file"
-                    accept="image/*"
-                    multiple
-                    className="hidden"
-                    onChange={(e) => {
-                      const files = Array.from(e.target.files || [])
+                  <p className="text-xs text-muted mt-1">
+                    Foto extra {extraPhotos.length + 1}
+                  </p>
+                </>
+              )}
+              <Input
+                type="file"
+                accept="image/*"
+                multiple
+                className="hidden"
+                onChange={handlePhotoChange}
+                disabled={photoLoading}
+              />
+            </label>
+          )}
+        </div>
+        <p className="text-xs text-muted-foreground mt-2">
+          Adicione fotos extras se necessário (localização atual, recompensa,
+          etc.)
+        </p>
+      </div>
 
-                      // create URLs for previews
-                      const filePreviews = files.map((file) =>
-                        URL.createObjectURL(file),
-                      )
-
-                      // Update your previews state with new previews
-                      setPreviews((prev) => {
-                        const updated = [...prev, ...filePreviews]
-                        field.onChange(updated) // ✅ pass array of strings to form
-                        return updated
-                      })
-                    }}
-                  />
-                </Label>
-              </div>
-            </FormControl>
-            <FormMessage />
-          </FormItem>
-        )}
-      />
       <Button className="w-full" size="rounded" type="submit">
         Criar post
       </Button>

@@ -180,8 +180,14 @@ export async function getUserPosts() {
         userId: session.user.id,
       },
       include: {
+        user: true,
         likes: true,
         comments: true,
+        photos: {
+          orderBy: {
+            order: 'asc',
+          },
+        },
         pet: {
           include: {
             photos: {
@@ -194,7 +200,7 @@ export async function getUserPosts() {
         },
       },
       orderBy: {
-        id: 'desc',
+        createdAt: 'desc',
       },
     })
 
