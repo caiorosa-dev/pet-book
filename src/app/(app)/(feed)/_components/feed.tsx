@@ -67,7 +67,7 @@ export default function Feed({
 
       {/* Lista de Posts */}
       {posts.length > 0 ? (
-        <div className="flex flex-col gap-4 max-w-md mx-auto w-full">
+        <div className="flex flex-col gap-4 w-full">
           {posts.map((post) => (
             <PostCard key={post.id} post={post} />
           ))}

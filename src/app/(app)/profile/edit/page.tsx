@@ -13,7 +13,7 @@ export default async function EditProfile() {
   })
   return (
     <Container>
-      <Tabs defaultValue="account" className="w-[400px]">
+      <Tabs defaultValue="account">
         <TabsList className="grid w-full grid-cols-2">
           <TabsTrigger value="account">Perfil</TabsTrigger>
           <TabsTrigger value="password">Segurança</TabsTrigger>

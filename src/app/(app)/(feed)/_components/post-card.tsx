@@ -4,7 +4,6 @@ import Image from 'next/image'
 
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
 import { Button } from '@/components/ui/button'
-import { Card } from '@/components/ui/card'
 import { getNameInitials } from '@/helpers/get-name-initials'
 import type { PostWithRelations } from '@/types/database'
 
@@ -109,31 +108,32 @@ function PostActions({ post }: { post: PostWithRelations }) {
       <div className="flex items-center gap-4">
         <Button variant="ghost" size="sm">
           <MessageCircle className="size-5" />
+          <span className="text-sm">{post.comments.length}</span>
         </Button>
         <Button variant="ghost" size="sm">
           <Share2 className="size-5" />
         </Button>
       </div>
-      {post.type === 'found' && (
-        <Button size="sm" className="gap-2">
-          <MapPin className="size-4" />
-          Encontrei
-        </Button>
-      )}
+
+      <Button variant="accent" size="sm">
+        <MapPin className="size-4 mr-1" />
+        {post.type === 'lost' ? 'Encontrei' : 'É meu'}
+      </Button>
     </div>
   )
 }
 
 export default function PostCard({ post }: PostCardProps) {
   return (
-    <Card className="overflow-hidden hover:shadow-md transition-shadow">
+    <div className="w-full bg-white rounded-xl overflow-hidden border border-gray-100 shadow-sm">
       <PostHeader post={post} />
       <PostImage post={post} />
-      <div className="p-4 space-y-3">
+
+      <div className="p-4">
         <PostContent post={post} />
         <PostDescription description={post.petDescription} />
         <PostActions post={post} />
       </div>
-    </Card>
+    </div>
   )
 }

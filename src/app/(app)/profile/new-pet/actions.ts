@@ -1,7 +1,6 @@
 'use server'
 
 import { revalidatePath } from 'next/cache'
-import { redirect } from 'next/navigation'
 import { z } from 'zod'
 
 import { getSession } from '@/lib/auth'
@@ -111,18 +110,8 @@ export async function addPet(
     console.log(`Upload concluído. ${uploadResults.length} fotos salvas`)
 
     revalidatePath('/profile')
-    redirect('/profile')
   } catch (error) {
     console.error('Erro completo em addPet:', error)
-
-    // Se for um redirect do Next.js, deixar passar
-    if (
-      error instanceof Error &&
-      (error.message === 'NEXT_REDIRECT' ||
-        (error as any).digest?.startsWith('NEXT_REDIRECT'))
-    ) {
-      throw error
-    }
 
     if (error instanceof z.ZodError) {
       throw new Error('Dados de entrada inválidos')

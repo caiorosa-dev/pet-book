@@ -10,6 +10,7 @@ import {
   Loader2,
   X,
 } from 'lucide-react'
+import { useRouter } from 'next/navigation'
 import { useState } from 'react'
 import { toast } from 'sonner'
 import { z } from 'zod'
@@ -47,6 +48,7 @@ interface PhotoData {
 export default function AddPetPage() {
   const [photos, setPhotos] = useState<PhotoData[]>([])
   const [photoLoading, setPhotoLoading] = useState(false)
+  const router = useRouter()
 
   const form = useActionForm({
     schema: addPetSchema,
@@ -69,6 +71,7 @@ export default function AddPetPage() {
     },
     onSubmitSuccess: () => {
       toast.success('Pet adicionado com sucesso!')
+      router.push('/profile')
     },
   })
 

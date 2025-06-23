@@ -94,15 +94,6 @@ export async function updatePet(
   } catch (error) {
     console.error('Erro ao atualizar pet:', error)
 
-    // Se for um redirect do Next.js, deixar passar
-    if (
-      error instanceof Error &&
-      (error.message === 'NEXT_REDIRECT' ||
-        (error as any).digest?.startsWith('NEXT_REDIRECT'))
-    ) {
-      throw error
-    }
-
     throw new Error(
       error instanceof Error ? error.message : 'Erro ao atualizar pet',
     )
@@ -223,15 +214,6 @@ export async function deletePet(petId: string) {
     return { success: true }
   } catch (error) {
     console.error('Erro ao deletar pet:', error)
-
-    // Se for um redirect do Next.js, deixar passar
-    if (
-      error instanceof Error &&
-      (error.message === 'NEXT_REDIRECT' ||
-        (error as any).digest?.startsWith('NEXT_REDIRECT'))
-    ) {
-      throw error
-    }
 
     throw new Error(
       error instanceof Error ? error.message : 'Erro ao deletar pet',

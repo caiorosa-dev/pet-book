@@ -11,6 +11,7 @@ import {
   X,
 } from 'lucide-react'
 import Image from 'next/image'
+import { useRouter } from 'next/navigation'
 import React, { useState } from 'react'
 import { toast } from 'sonner'
 
@@ -25,7 +26,6 @@ import {
   FormMessage,
 } from '@/components/ui/form'
 import { Input } from '@/components/ui/input'
-import { Label } from '@/components/ui/label'
 import {
   Popover,
   PopoverContent,
@@ -42,6 +42,7 @@ import { foundPetSchema, type PhotoData } from '../schema'
 export function FoundPetForm() {
   const [photos, setPhotos] = useState<PhotoData[]>([])
   const [photoLoading, setPhotoLoading] = useState(false)
+  const router = useRouter()
 
   const form = useActionForm({
     schema: foundPetSchema,
@@ -64,6 +65,7 @@ export function FoundPetForm() {
     },
     onSubmitSuccess: () => {
       toast.success('Post criado com sucesso!')
+      router.push('/')
     },
   })
 

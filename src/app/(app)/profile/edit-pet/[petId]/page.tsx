@@ -72,7 +72,15 @@ export default function EditPetPage() {
 
   const form = useActionForm({
     schema: updatePetSchema,
-    action: (data) => updatePet(petId, data),
+    action: async (data) => {
+      // Primeiro fazer upload das novas fotos
+      if (newPhotos.length > 0) {
+        await uploadPetPhotos(petId, newPhotos)
+      }
+
+      // Depois atualizar os dados do pet
+      return await updatePet(petId, data)
+    },
     defaultValues: {
       name: '',
       species: '',
@@ -84,6 +92,7 @@ export default function EditPetPage() {
     },
     onSubmitSuccess: () => {
       toast.success('Pet atualizado com sucesso!')
+      setNewPhotos([]) // Limpar as novas fotos após sucesso
       router.push('/profile')
     },
   })
@@ -190,19 +199,6 @@ export default function EditPetPage() {
       }
     },
     [deletingPhotos],
-  )
-
-  const handleSubmit = useCallback(
-    async (data: z.infer<typeof updatePetSchema>) => {
-      // Primeiro fazer upload das novas fotos
-      if (newPhotos.length > 0) {
-        await uploadPetPhotos(petId, newPhotos)
-      }
-
-      // Depois atualizar os dados do pet
-      return await updatePet(petId, data)
-    },
-    [petId, newPhotos],
   )
 
   const handleDeletePet = useCallback(async () => {
