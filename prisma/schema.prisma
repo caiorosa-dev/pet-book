@@ -23,8 +23,9 @@ model User {
   accounts Account[]
   sessions Session[]
   posts    Post[]
-  Comment  Comment[]
-  Like     Like[]
+  pets     Pet[]
+  comments Comment[]
+  likes    Like[]
 
   @@map("users")
 }
@@ -80,7 +81,7 @@ model Verification {
 
 model Post {
   id               String   @id @default(uuid())
-  userId           String   @map("user_id")
+  userId           String?  @map("user_id")
   petId            String?  @map("pet_id")
   lastSeenDate     DateTime @map("last_seen_date")
   lastSeenLocation String   @map("last_seen_location")
@@ -98,12 +99,34 @@ model Post {
 
 model Pet {
   id              String   @id @default(uuid())
+  userId          String   @map("user_id")
   name            String
-  photos          String[]
   species         String
   breed           String
   characteristics String
-  posts           Post[]
+  createdAt       DateTime @default(now()) @map("created_at")
+  updatedAt       DateTime @updatedAt @map("updated_at")
+
+  owner  User       @relation(fields: [userId], references: [id], onDelete: Cascade)
+  posts  Post[]
+  photos PetPhoto[]
+
+  @@map("pets")
+}
+
+model PetPhoto {
+  id        String   @id @default(uuid())
+  petId     String   @map("pet_id")
+  filename  String
+  s3Key     String   @map("s3_key")
+  s3Url     String   @map("s3_url")
+  order     Int      @default(0)
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+
+  pet Pet @relation(fields: [petId], references: [id], onDelete: Cascade)
+
+  @@map("pet_photos")
 }
 
 model Comment {

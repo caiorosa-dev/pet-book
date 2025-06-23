@@ -6,10 +6,15 @@ import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
 import { Button } from '@/components/ui/button'
 import { auth } from '@/lib/auth'
 
+import { getUserStats } from '../new-pet/actions'
+
 export default async function ProfileHeader() {
   const session = await auth.api.getSession({
     headers: await headers(),
   })
+
+  const stats = await getUserStats()
+
   return (
     <header className="space-y-4">
       <div className="flex w-full justify-between gap-4 items-center">
@@ -23,15 +28,15 @@ export default async function ProfileHeader() {
         </div>
         <div className="flex gap-4 justify-center w-full text-center">
           <div>
-            <h1 className="text-2xl">3</h1>
+            <h1 className="text-2xl">{stats.pets}</h1>
             <p className="text-muted text-base">pets</p>
           </div>
           <div>
-            <h1 className="text-2xl">17</h1>
+            <h1 className="text-2xl">{stats.found}</h1>
             <h2 className="text-muted text-base">Encontrados</h2>
           </div>
           <div>
-            <h1 className="text-2xl">10</h1>
+            <h1 className="text-2xl">{stats.posts}</h1>
             <h2 className="text-muted text-base">Posts</h2>
           </div>
         </div>
