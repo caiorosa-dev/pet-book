@@ -7,6 +7,7 @@ import { Button } from '@/components/ui/button'
 import { auth } from '@/lib/auth'
 
 import { getUserStats } from '../new-pet/actions'
+import { SignOutButton } from './sign-out'
 
 export default async function ProfileHeader() {
   const session = await auth.api.getSession({
@@ -46,7 +47,8 @@ export default async function ProfileHeader() {
         <a className="text-primary">@{session?.user.username}</a>
       </div>
 
-      <div className="flex gap-4">
+      <div className="grid grid-cols-3 gap-4">
+        <SignOutButton />
         <Link href={'profile/edit'} className="flex-1">
           <Button variant="accent" size="sm" className="w-full">
             Editar perfil
