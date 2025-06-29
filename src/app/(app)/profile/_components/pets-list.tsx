@@ -10,7 +10,7 @@ export default async function PetsList() {
   const pets = await getUserPets()
 
   return (
-    <div className="flex flex-col gap-4 mt-12">
+    <div className="flex flex-col gap-4 mt-12 items-center">
       <h1 className="text-x1">Seus Pets</h1>
       {pets.length > 0 ? (
         <Carousel className="w-full">
@@ -29,7 +29,7 @@ export default async function PetsList() {
         </div>
       )}
       <Link href="/profile/new-pet">
-        <Button className="w-1/2">Adicionar novo pet</Button>
+        <Button>Adicionar novo pet</Button>
       </Link>
     </div>
   )
