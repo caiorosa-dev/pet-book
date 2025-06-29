@@ -1,13 +1,21 @@
+'use client'
+
 import { format } from 'date-fns'
 import { Bone, Dog } from 'lucide-react'
 import { headers } from 'next/headers'
 import Image from 'next/image'
+
 import { redirect } from 'next/navigation'
+import { toast } from 'sonner'
 
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
 import { capitalizeString } from '@/helpers/capitalize'
 import { getNameInitials } from '@/helpers/get-name-initials'
+
 import { auth } from '@/lib/auth'
+
+import { generatePostShareData, sharePost } from '@/lib/share-utils'
+
 import type { PostWithRelations } from '@/types/database'
 
 import { PostActions } from './post-actions'
@@ -108,10 +116,41 @@ function PostDescription({ description }: { description: string }) {
   )
 }
 
+
 export default async function PostCard({ post }: PostCardProps) {
   const session = await auth.api.getSession({
     headers: await headers(),
   })
+  
+// Componente das Ações
+function PostActions({ post }: { post: PostWithRelations }) {
+  const handleShare = async () => {
+    try {
+      const shareData = generatePostShareData(post)
+      const success = await sharePost(shareData)
+
+      if (success) {
+        toast.success('Post compartilhado com sucesso!')
+      } else {
+        toast.error('Não foi possível compartilhar o post')
+      }
+    } catch (error) {
+      console.error('Error sharing post:', error)
+      toast.error('Erro ao compartilhar o post')
+    }
+  }
+
+//   return (
+//     <div className="flex items-center justify-between">
+//       <div className="flex items-center gap-4">
+//         <Button variant="ghost" size="sm">
+//           <MessageCircle className="size-5" />
+//           <span className="text-sm">{post.comments.length}</span>
+//         </Button>
+//         <Button variant="ghost" size="sm" onClick={handleShare}>
+//           <Share2 className="size-5" />
+//         </Button>
+//       </div>
 
   if (!session) {
     redirect('/welcome')
