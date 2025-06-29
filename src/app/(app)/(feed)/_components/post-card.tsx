@@ -1,16 +1,24 @@
 'use client'
 
 import { format } from 'date-fns'
-import { Bone, Dog, MapPin, MessageCircle, Share2 } from 'lucide-react'
+import { Bone, Dog } from 'lucide-react'
+import { headers } from 'next/headers'
 import Image from 'next/image'
+
+import { redirect } from 'next/navigation'
 import { toast } from 'sonner'
 
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
-import { Button } from '@/components/ui/button'
 import { capitalizeString } from '@/helpers/capitalize'
 import { getNameInitials } from '@/helpers/get-name-initials'
+
+import { auth } from '@/lib/auth'
+
 import { generatePostShareData, sharePost } from '@/lib/share-utils'
+
 import type { PostWithRelations } from '@/types/database'
+
+import { PostActions } from './post-actions'
 
 interface PostCardProps {
   post: PostWithRelations
@@ -108,6 +116,12 @@ function PostDescription({ description }: { description: string }) {
   )
 }
 
+
+export default async function PostCard({ post }: PostCardProps) {
+  const session = await auth.api.getSession({
+    headers: await headers(),
+  })
+  
 // Componente das Ações
 function PostActions({ post }: { post: PostWithRelations }) {
   const handleShare = async () => {
@@ -126,27 +140,22 @@ function PostActions({ post }: { post: PostWithRelations }) {
     }
   }
 
-  return (
-    <div className="flex items-center justify-between">
-      <div className="flex items-center gap-4">
-        <Button variant="ghost" size="sm">
-          <MessageCircle className="size-5" />
-          <span className="text-sm">{post.comments.length}</span>
-        </Button>
-        <Button variant="ghost" size="sm" onClick={handleShare}>
-          <Share2 className="size-5" />
-        </Button>
-      </div>
+//   return (
+//     <div className="flex items-center justify-between">
+//       <div className="flex items-center gap-4">
+//         <Button variant="ghost" size="sm">
+//           <MessageCircle className="size-5" />
+//           <span className="text-sm">{post.comments.length}</span>
+//         </Button>
+//         <Button variant="ghost" size="sm" onClick={handleShare}>
+//           <Share2 className="size-5" />
+//         </Button>
+//       </div>
 
-      <Button variant="accent" size="sm">
-        <MapPin className="size-4 mr-1" />
-        {post.type === 'lost' ? 'Encontrei' : 'É meu'}
-      </Button>
-    </div>
-  )
-}
+  if (!session) {
+    redirect('/welcome')
+  }
 
-export default function PostCard({ post }: PostCardProps) {
   return (
     <div className="w-full bg-white rounded-xl overflow-hidden border border-gray-100 shadow-sm">
       <PostHeader post={post} />
@@ -155,7 +164,7 @@ export default function PostCard({ post }: PostCardProps) {
       <div className="p-4">
         <PostContent post={post} />
         <PostDescription description={post.petDescription} />
-        <PostActions post={post} />
+        <PostActions post={post} currentUserid={session.user.id} />
       </div>
     </div>
   )
