@@ -29,7 +29,7 @@ export function SearchForm() {
         render={({ field }) => (
           <FormItem>
             <FormControl>
-              <Input {...field} icon={Search} placeholder="Procure algo..." />
+              <Input icon={Search} placeholder="Procure algo..." {...field} />
             </FormControl>
             <FormMessage />
           </FormItem>

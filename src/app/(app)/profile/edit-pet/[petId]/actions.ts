@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
 'use server'
 
 import { revalidatePath } from 'next/cache'
@@ -7,21 +6,9 @@ import { z } from 'zod'
 import { getSession } from '@/lib/auth'
 import { prisma } from '@/lib/prisma'
 import { deletePetPhoto, uploadPetPhoto } from '@/lib/s3-utils'
+import { PhotoData } from '@/types/photo-data'
 
-const updatePetSchema = z.object({
-  name: z.string().min(1, 'Nome é obrigatório'),
-  species: z.string().min(1, 'Espécie é obrigatória'),
-  breed: z.string().min(1, 'Raça é obrigatória'),
-  features: z.string().optional(),
-})
-
-interface PhotoData {
-  id: string
-  file: string // base64
-  filename: string
-  mimeType: string
-  preview: string
-}
+import { updatePetSchema } from './schema'
 
 export async function getPetById(petId: string) {
   try {

@@ -1,14 +1,7 @@
 'use client'
 
 import { format } from 'date-fns'
-import {
-  Calendar as CalendarIcon,
-  CameraIcon,
-  ClipboardIcon,
-  DogIcon,
-  Loader2,
-  X,
-} from 'lucide-react'
+import { Calendar as CalendarIcon, ClipboardIcon, DogIcon } from 'lucide-react'
 import Image from 'next/image'
 import { useRouter } from 'next/navigation'
 import React, { useEffect, useState } from 'react'
@@ -25,8 +18,8 @@ import {
   FormLabel,
   FormMessage,
 } from '@/components/ui/form'
-import { Input } from '@/components/ui/input'
 import { InputCombobox } from '@/components/ui/input-combobox'
+import { PhotoUploadField } from '@/components/ui/photo-upload-field'
 import {
   Popover,
   PopoverContent,
@@ -35,20 +28,20 @@ import {
 import { Textarea } from '@/components/ui/textarea'
 import { capitalizeString } from '@/helpers/capitalize'
 import { useActionForm } from '@/hooks/use-action-form'
-import { processImageFiles } from '@/lib/image-utils'
 import { cn } from '@/lib/utils'
+import { ComboboxOption } from '@/types/combobox-option'
 import type { PetWithRelations } from '@/types/database'
+import { PhotoData } from '@/types/photo-data'
 
 import { createLostPetPost } from '../actions'
-import { lostPetSchema, type PhotoData } from '../schema'
+import { lostPetSchema } from '../schema'
 
 interface LostPetFormProps {
   userPets: readonly PetWithRelations[]
 }
 
 export function LostPetForm({ userPets }: LostPetFormProps) {
-  const [extraPhotos, setExtraPhotos] = useState<PhotoData[]>([])
-  const [photoLoading, setPhotoLoading] = useState(false)
+  const [photos, setPhotos] = useState<PhotoData[]>([])
   const [selectedPet, setSelectedPet] = useState<PetWithRelations | null>(null)
   const router = useRouter()
 
@@ -56,12 +49,12 @@ export function LostPetForm({ userPets }: LostPetFormProps) {
     schema: lostPetSchema,
     action: async (data) => {
       // Não é obrigatório ter fotos extras se o pet já tem fotos
-      return createLostPetPost(data, extraPhotos)
+      return createLostPetPost(data, photos)
     },
     defaultValues: {
-      pet: '',
+      pet: undefined,
       lastSeenDate: new Date(),
-      petDescription: '',
+      petDescription: undefined,
     },
     onSubmitError: (error) => {
       toast.error(error?.message || 'Erro ao criar post')
@@ -88,46 +81,7 @@ export function LostPetForm({ userPets }: LostPetFormProps) {
     }
   }, [watchedPetId, userPets])
 
-  async function handlePhotoChange(e: React.ChangeEvent<HTMLInputElement>) {
-    const files = Array.from(e.target.files || [])
-
-    if (files.length === 0) return
-
-    // Verificar se não excede o limite de 5 fotos extras
-    if (extraPhotos.length + files.length > 5) {
-      toast.error('Você pode adicionar no máximo 5 fotos extras')
-      return
-    }
-
-    setPhotoLoading(true)
-
-    try {
-      const processedPhotos = await processImageFiles(files)
-      setExtraPhotos((prev) => [...prev, ...processedPhotos])
-    } catch (error) {
-      if (error instanceof Error) {
-        toast.error(error.message)
-      } else {
-        toast.error('Erro ao processar imagens')
-      }
-    } finally {
-      setPhotoLoading(false)
-    }
-
-    // Limpar o input
-    e.target.value = ''
-  }
-
-  function removeExtraPhoto(photoId: string) {
-    setExtraPhotos((prev) => prev.filter((photo) => photo.id !== photoId))
-  }
-
-  type Option = {
-    label: string
-    value: string
-  }
-
-  const userPetsOptions: Option[] = userPets.map((pet) => ({
+  const userPetsOptions: ComboboxOption[] = userPets.map((pet) => ({
     label: capitalizeString(pet.name),
     value: pet.id,
   }))
@@ -243,57 +197,14 @@ export function LostPetForm({ userPets }: LostPetFormProps) {
         )}
       />
 
-      {/* Fotos extras */}
       <div>
         <FormLabel className="!text-black">Fotos extras (opcional)</FormLabel>
-        <div className="flex gap-4 flex-wrap mt-2">
-          {extraPhotos.map((photo) => (
-            <div key={photo.id} className="relative">
-              <Image
-                src={photo.preview}
-                alt={photo.filename}
-                width={128}
-                height={128}
-                className="w-32 h-32 object-cover rounded-xl border"
-              />
-              <Button
-                type="button"
-                variant="destructive"
-                size="icon"
-                className="absolute top-1 right-1 h-6 w-6 bg-white/80 backdrop-blur-sm rounded-full shadow-md"
-                onClick={() => removeExtraPhoto(photo.id)}
-              >
-                <X className="h-4 w-4 text-gray-700" />
-              </Button>
-            </div>
-          ))}
-
-          {extraPhotos.length < 5 && (
-            <label className="w-32 h-32 flex flex-col items-center justify-center border-[3px] border-dashed rounded-2xl cursor-pointer hover:bg-accent transition">
-              {photoLoading ? (
-                <Loader2 className="animate-spin text-muted" size={32} />
-              ) : (
-                <>
-                  <CameraIcon className="w-8 h-8 text-primary" />
-                  <p className="text-xs text-muted mt-1">
-                    Foto extra {extraPhotos.length + 1}
-                  </p>
-                </>
-              )}
-              <Input
-                type="file"
-                accept="image/*"
-                multiple
-                className="hidden"
-                onChange={handlePhotoChange}
-                disabled={photoLoading}
-              />
-            </label>
-          )}
-        </div>
-        <p className="text-xs text-muted-foreground mt-2">
+        <PhotoUploadField photos={photos || []} setPhotos={setPhotos} />
+        <p className="text-xs text-accent-foreground/80 mt-2">
           Adicione fotos extras se necessário (localização atual, recompensa,
           etc.)
+          <br />
+          Suportado: JPEG, PNG, WebP. Máximo 5 fotos, 10MB cada.
         </p>
       </div>
 

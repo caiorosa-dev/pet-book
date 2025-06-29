@@ -21,5 +21,3 @@ export const photoDataSchema = z.object({
   mimeType: z.string(),
   preview: z.string(),
 })
-
-export type PhotoData = z.infer<typeof photoDataSchema>

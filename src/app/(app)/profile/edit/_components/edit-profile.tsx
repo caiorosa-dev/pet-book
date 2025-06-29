@@ -124,12 +124,12 @@ function EditProfileTab({ userName }: { userName: string }) {
                   <AlertDialogTrigger asChild>
                     <Button
                       type="button"
-                      variant="destructive"
+                      variant="ghost"
                       size="sm"
-                      className="absolute -top-2 -right-2 rounded-full w-6 h-6 p-0"
+                      className="absolute top-1 right-1 h-6 w-6 bg-white/80 backdrop-blur-sm rounded-full shadow-md p-0"
                       disabled={isRemoving}
                     >
-                      <X className="h-3 w-3" />
+                      <X className="h-4 w-4 text-gray-700" />
                     </Button>
                   </AlertDialogTrigger>
                   <AlertDialogContent>
@@ -137,7 +137,7 @@ function EditProfileTab({ userName }: { userName: string }) {
                       <AlertDialogTitle>
                         Remover foto de perfil
                       </AlertDialogTitle>
-                      <AlertDialogDescription>
+                      <AlertDialogDescription className="text-black">
                         Tem certeza que deseja remover sua foto de perfil? Esta
                         ação não pode ser desfeita.
                       </AlertDialogDescription>
@@ -185,7 +185,7 @@ function EditProfileTab({ userName }: { userName: string }) {
             </p>
           </div>
 
-          <div className="space-y-1">
+          <div className="flex flex-col gap-2">
             <Label htmlFor="name">Nome</Label>
             <Input
               onChange={(e) => setName(e.target.value)}
