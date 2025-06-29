@@ -26,6 +26,7 @@ import {
   FormMessage,
 } from '@/components/ui/form'
 import { Input } from '@/components/ui/input'
+import { InputCombobox } from '@/components/ui/input-combobox'
 import {
   Popover,
   PopoverContent,
@@ -55,10 +56,10 @@ export function FoundPetForm() {
       return createFoundPetPost(data, photos)
     },
     defaultValues: {
-      animalSpecies: '',
-      animalBreed: '',
+      animalSpecies: undefined,
+      animalBreed: undefined,
       lastSeenDate: new Date(),
-      petDescription: '',
+      petDescription: undefined,
     },
     onSubmitError: (error) => {
       toast.error(error?.message || 'Erro ao criar post')
@@ -103,8 +104,111 @@ export function FoundPetForm() {
     setPhotos((prev) => prev.filter((photo) => photo.id !== photoId))
   }
 
+  const animalSpeciesOptions = [
+    { label: 'Cachorro', value: 'cachorro' },
+    { label: 'Gato', value: 'gato' },
+    { label: 'Peixe', value: 'peixe' },
+    { label: 'Pássaro', value: 'passaro' },
+    { label: 'Coelho', value: 'coelho' },
+    { label: 'Hamster', value: 'hamster' },
+    { label: 'Porquinho-da-índia', value: 'porquinho-da-india' },
+    { label: 'Tartaruga', value: 'tartaruga' },
+    { label: 'Cobra', value: 'cobra' },
+    { label: 'Lagarto', value: 'lagarto' },
+    { label: 'Furão', value: 'furao' },
+    { label: 'Cavalo', value: 'cavalo' },
+  ] as const
+
+  const breedOptionsBySpecies: Record<
+    string,
+    { label: string; value: string }[]
+  > = {
+    cachorro: [
+      { label: 'Husky Siberiano', value: 'husky siberiano' },
+      { label: 'Labrador Retriever', value: 'labrador retriever' },
+      { label: 'Poodle', value: 'poodle' },
+      { label: 'Bulldog', value: 'bulldog' },
+      { label: 'Golden Retriever', value: 'golden retriever' },
+      { label: 'Shih Tzu', value: 'shih tzu' },
+      { label: 'Beagle', value: 'beagle' },
+      { label: 'Yorkshire Terrier', value: 'yorkshire terrier' },
+    ],
+    gato: [
+      { label: 'Persa', value: 'persa' },
+      { label: 'Siamês', value: 'siames' },
+      { label: 'Maine Coon', value: 'maine coon' },
+      { label: 'Ragdoll', value: 'ragdoll' },
+      { label: 'Bengal', value: 'bengal' },
+      { label: 'Sphynx (Sem pelo)', value: 'sphynx' },
+      { label: 'British Shorthair', value: 'british shorthair' },
+    ],
+    peixe: [
+      { label: 'Betta', value: 'betta' },
+      { label: 'Tetra Neon', value: 'tetra neon' },
+      { label: 'Guppy', value: 'guppy' },
+      { label: 'Molly', value: 'molly' },
+      { label: 'Peixe Dourado', value: 'peixe dourado' },
+    ],
+    passaro: [
+      { label: 'Calopsita', value: 'calopsita' },
+      { label: 'Periquito', value: 'periquito' },
+      { label: 'Papagaio', value: 'papagaio' },
+      { label: 'Canário', value: 'canario' },
+    ],
+    coelho: [
+      { label: 'Cabeça de Leão (Lionhead)', value: 'cabeca de leao' },
+      { label: 'Mini Lop', value: 'mini lop' },
+      { label: 'Angorá', value: 'angora' },
+      { label: 'Rex', value: 'rex' },
+    ],
+    hamster: [
+      { label: 'Sírio', value: 'sirio' },
+      { label: 'Anão Russo', value: 'anao russo' },
+      { label: 'Campbell', value: 'campbell' },
+      { label: 'Roborovski', value: 'roborovski' },
+    ],
+    'porquinho-da-india': [
+      { label: 'Peruano', value: 'peruano' },
+      { label: 'Teddy', value: 'teddy' },
+      { label: 'Texel', value: 'texel' },
+      { label: 'Abissínio', value: 'abissinio' },
+    ],
+    tartaruga: [
+      {
+        label: 'Tartaruga de Orelha Vermelha',
+        value: 'tartaruga de orelha vermelha',
+      },
+      { label: 'Tartaruga de Galápagos', value: 'tartaruga de galapagos' },
+      { label: 'Tartaruga Leopardo', value: 'tartaruga leopardo' },
+    ],
+    cobra: [
+      { label: 'Píton Real', value: 'piton real' },
+      { label: 'Cobra do Milho', value: 'cobra do milho' },
+      { label: 'Jiboia', value: 'jiboia' },
+    ],
+    lagarto: [
+      { label: 'Dragão Barbudo', value: 'dragao barbudo' },
+      { label: 'Gecko Leachianus', value: 'gecko leachianus' },
+      { label: 'Gecko Leopardo', value: 'gecko leopardo' },
+    ],
+    furao: [{ label: 'Furão Comum', value: 'furao comum' }],
+    cavalo: [
+      { label: 'Quarto de Milha', value: 'quarto de milha' },
+      { label: 'Puro Sangue Inglês', value: 'puro sangue ingles' },
+      { label: 'Mangalarga Marchador', value: 'mangalarga marchador' },
+    ],
+  }
+
+  const selectedSpecies = form.watch('animalSpecies')
+  const animalBreedOptions = breedOptionsBySpecies[selectedSpecies] ?? []
+
+  // Clear animalBreed when animalSpecies changes
+  // useEffect(() => {
+  //   form.setValue('animalBreed', '') // reset breed on species change
+  // }, [selectedSpecies, form])
+
   return (
-    <Form {...form}>
+    <Form {...form} className="flex flex-col gap-4">
       <FormField
         control={form.control}
         name="animalSpecies"
@@ -112,7 +216,12 @@ export function FoundPetForm() {
           <FormItem>
             <FormLabel className="!text-black">Espécie do animal</FormLabel>
             <FormControl>
-              <Input placeholder="Cachorro" icon={DogIcon} {...field} />
+              <InputCombobox
+                icon={DogIcon}
+                options={animalSpeciesOptions}
+                placeholder="Selecione a espécie"
+                {...field}
+              />
             </FormControl>
             <FormMessage />
           </FormItem>
@@ -125,7 +234,12 @@ export function FoundPetForm() {
           <FormItem>
             <FormLabel className="!text-black">Raça do animal</FormLabel>
             <FormControl>
-              <Input placeholder="Husky" icon={BoneIcon} {...field} />
+              <InputCombobox
+                icon={BoneIcon}
+                options={animalBreedOptions}
+                placeholder={animalBreedOptions[0]?.label ?? 'Selecione a raça'}
+                {...field}
+              />
             </FormControl>
             <FormMessage />
           </FormItem>
@@ -166,7 +280,6 @@ export function FoundPetForm() {
                   disabled={(date) =>
                     date > new Date() || date < new Date('1900-01-01')
                   }
-                  initialFocus
                 />
               </PopoverContent>
             </Popover>
@@ -208,12 +321,12 @@ export function FoundPetForm() {
               />
               <Button
                 type="button"
-                variant="destructive"
+                variant="ghost"
                 size="icon"
-                className="absolute -top-2 -right-2 h-6 w-6"
+                className="absolute top-1 right-1 h-6 w-6 bg-white/80 backdrop-blur-sm rounded-full shadow-md"
                 onClick={() => removePhoto(photo.id)}
               >
-                <X className="h-4 w-4" />
+                <X className="h-4 w-4 text-gray-700" />
               </Button>
             </div>
           ))}

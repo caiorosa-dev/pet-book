@@ -5,6 +5,7 @@ import {
   Calendar as CalendarIcon,
   CameraIcon,
   ClipboardIcon,
+  DogIcon,
   Loader2,
   X,
 } from 'lucide-react'
@@ -25,19 +26,14 @@ import {
   FormMessage,
 } from '@/components/ui/form'
 import { Input } from '@/components/ui/input'
+import { InputCombobox } from '@/components/ui/input-combobox'
 import {
   Popover,
   PopoverContent,
   PopoverTrigger,
 } from '@/components/ui/popover'
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from '@/components/ui/select'
 import { Textarea } from '@/components/ui/textarea'
+import { capitalizeString } from '@/helpers/capitalize'
 import { useActionForm } from '@/hooks/use-action-form'
 import { processImageFiles } from '@/lib/image-utils'
 import { cn } from '@/lib/utils'
@@ -47,7 +43,7 @@ import { createLostPetPost } from '../actions'
 import { lostPetSchema, type PhotoData } from '../schema'
 
 interface LostPetFormProps {
-  userPets: PetWithRelations[]
+  userPets: readonly PetWithRelations[]
 }
 
 export function LostPetForm({ userPets }: LostPetFormProps) {
@@ -126,8 +122,18 @@ export function LostPetForm({ userPets }: LostPetFormProps) {
     setExtraPhotos((prev) => prev.filter((photo) => photo.id !== photoId))
   }
 
+  type Option = {
+    label: string
+    value: string
+  }
+
+  const userPetsOptions: Option[] = userPets.map((pet) => ({
+    label: capitalizeString(pet.name),
+    value: pet.id,
+  }))
+
   return (
-    <Form {...form}>
+    <Form {...form} className="flex flex-col gap-4">
       <FormField
         control={form.control}
         name="pet"
@@ -136,20 +142,13 @@ export function LostPetForm({ userPets }: LostPetFormProps) {
             <FormLabel className="!text-black">
               Selecione o pet perdido
             </FormLabel>
-            <Select onValueChange={field.onChange} defaultValue={field.value}>
-              <FormControl>
-                <SelectTrigger>
-                  <SelectValue placeholder="Selecione um pet" />
-                </SelectTrigger>
-              </FormControl>
-              <SelectContent>
-                {userPets.map((pet) => (
-                  <SelectItem key={pet.id} value={pet.id}>
-                    {pet.name} - {pet.species}
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
+            <InputCombobox
+              icon={DogIcon}
+              options={userPetsOptions}
+              placeholder="Selecione seu pet perdido"
+              emptyOptionsMessage="Primeiro cadastre seu pet"
+              {...field}
+            />
             <FormMessage />
           </FormItem>
         )}
@@ -261,10 +260,10 @@ export function LostPetForm({ userPets }: LostPetFormProps) {
                 type="button"
                 variant="destructive"
                 size="icon"
-                className="absolute -top-2 -right-2 h-6 w-6"
+                className="absolute top-1 right-1 h-6 w-6 bg-white/80 backdrop-blur-sm rounded-full shadow-md"
                 onClick={() => removeExtraPhoto(photo.id)}
               >
-                <X className="h-4 w-4" />
+                <X className="h-4 w-4 text-gray-700" />
               </Button>
             </div>
           ))}
