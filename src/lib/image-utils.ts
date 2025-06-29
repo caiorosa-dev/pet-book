@@ -60,6 +60,9 @@ export async function processImageFiles(files: File[]): Promise<
         preview: base64,
       })
     } catch (error) {
+      if (error instanceof Error) {
+        throw new Error('Erro ao processar imagem: ' + error.message)
+      }
       throw new Error('Erro ao processar imagem')
     }
   }

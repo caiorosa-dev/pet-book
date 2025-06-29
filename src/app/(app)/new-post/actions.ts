@@ -6,8 +6,9 @@ import { z } from 'zod'
 import { auth } from '@/lib/auth'
 import { prisma } from '@/lib/prisma'
 import { uploadPostPhoto } from '@/lib/s3-utils'
+import { PhotoData } from '@/types/photo-data'
 
-import { foundPetSchema, lostPetSchema, type PhotoData } from './schema'
+import { foundPetSchema, lostPetSchema } from './schema'
 
 export async function createFoundPetPost(
   formData: z.infer<typeof foundPetSchema>,
