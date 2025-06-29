@@ -4,6 +4,7 @@ import Image from 'next/image'
 
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
 import { Button } from '@/components/ui/button'
+import { capitalizeString } from '@/helpers/capitalize'
 import { getNameInitials } from '@/helpers/get-name-initials'
 import type { PostWithRelations } from '@/types/database'
 
@@ -70,9 +71,9 @@ function PostContent({ post }: { post: PostWithRelations }) {
     <header className="flex items-center justify-between">
       <div className="flex items-start gap-2 mb-2">
         <h2 className="text-lg font-semibold text-gray-900 flex-1">
-          {post.type === 'lost' ? 'Perdi o ' : 'Encontrei o '}
+          {post.type === 'lost' ? `Perdi o ` : `Encontrei o `}
           <span className="text-teal-600">
-            {post.pet?.name || post.animalSpecies}
+            {capitalizeString(post.pet?.name ?? post.animalSpecies)}
           </span>
         </h2>
       </div>
@@ -80,12 +81,14 @@ function PostContent({ post }: { post: PostWithRelations }) {
       {/* Badges horizontais igual pet-component */}
       <div className="flex gap-4 mb-3">
         <div className="flex gap-1 items-center">
-          <Bone className="text-primary size-4" />
-          <span className="text-xs">{post.animalBreed}</span>
+          <Dog className="text-primary size-4" />
+          <span className="text-xs">
+            {capitalizeString(post.animalSpecies)}
+          </span>
         </div>
         <div className="flex gap-1 items-center">
-          <Dog className="text-primary size-4" />
-          <span className="text-xs">{post.animalSpecies}</span>
+          <Bone className="text-primary size-4" />
+          <span className="text-xs">{capitalizeString(post.animalBreed)}</span>
         </div>
       </div>
     </header>
