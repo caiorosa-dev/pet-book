@@ -1,10 +1,14 @@
+'use client'
+
 import { format } from 'date-fns'
 import { Bone, Dog, MapPin, MessageCircle, Share2 } from 'lucide-react'
 import Image from 'next/image'
+import { toast } from 'sonner'
 
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
 import { Button } from '@/components/ui/button'
 import { getNameInitials } from '@/helpers/get-name-initials'
+import { generatePostShareData, sharePost } from '@/lib/share-utils'
 import type { PostWithRelations } from '@/types/database'
 
 interface PostItemProps {
@@ -103,6 +107,22 @@ function PostDescription({ description }: { description: string }) {
 
 // Componente das Ações
 function PostActions({ post }: { post: PostWithRelations }) {
+  const handleShare = async () => {
+    try {
+      const shareData = generatePostShareData(post)
+      const success = await sharePost(shareData)
+
+      if (success) {
+        toast.success('Post compartilhado com sucesso!')
+      } else {
+        toast.error('Não foi possível compartilhar o post')
+      }
+    } catch (error) {
+      console.error('Error sharing post:', error)
+      toast.error('Erro ao compartilhar o post')
+    }
+  }
+
   return (
     <div className="flex items-center justify-between">
       <div className="flex items-center gap-4">
@@ -110,7 +130,7 @@ function PostActions({ post }: { post: PostWithRelations }) {
           <MessageCircle className="size-5" />
           <span className="text-sm">{post.comments.length}</span>
         </Button>
-        <Button variant="ghost" size="sm">
+        <Button variant="ghost" size="sm" onClick={handleShare}>
           <Share2 className="size-5" />
         </Button>
       </div>

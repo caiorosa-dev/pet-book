@@ -1,6 +1,7 @@
 'use client'
 
 import { Search } from 'lucide-react'
+import { useCallback, useEffect, useState } from 'react'
 
 import {
   Form,
@@ -15,21 +16,84 @@ import { useClientForm } from '@/hooks/use-client-form'
 import { search } from '../actions'
 import { searchSchema } from '../schema'
 
-export function SearchForm() {
+interface SearchFormProps {
+  onSearchResults?: (results: any, isLoading: boolean) => void
+}
+
+export function SearchForm({ onSearchResults }: SearchFormProps) {
+  const [isLoading, setIsLoading] = useState(false)
+
   const form = useClientForm({
     schema: searchSchema,
-    handler: search,
+    defaultValues: {
+      query: '',
+    },
   })
 
+  const query = form.watch('query')
+
+  const performSearch = useCallback(
+    async (searchQuery: string) => {
+      if (searchQuery.trim()) {
+        setIsLoading(true)
+        onSearchResults?.(null, true)
+
+        try {
+          const results = await search({ query: searchQuery.trim() })
+          onSearchResults?.(results, false)
+        } catch (error) {
+          console.error('Search error:', error)
+          onSearchResults?.(
+            {
+              posts: [],
+              pets: [],
+              users: [],
+              ongs: [],
+            },
+            false,
+          )
+        } finally {
+          setIsLoading(false)
+        }
+      } else {
+        // Clear results when query is empty
+        onSearchResults?.(
+          {
+            posts: [],
+            pets: [],
+            users: [],
+            ongs: [],
+          },
+          false,
+        )
+      }
+    },
+    [onSearchResults],
+  )
+
+  // Debounced search effect
+  useEffect(() => {
+    const delayedSearch = setTimeout(() => {
+      performSearch(query)
+    }, 300) // 300ms debounce
+
+    return () => clearTimeout(delayedSearch)
+  }, [query, performSearch])
+
   return (
-    <Form {...form} className="space-y-6">
+    <Form {...form}>
       <FormField
         control={form.control}
         name="query"
         render={({ field }) => (
           <FormItem>
             <FormControl>
-              <Input icon={Search} placeholder="Procure algo..." {...field} />
+              <Input
+                {...field}
+                icon={Search}
+                placeholder="Procure por pets, pessoas, posts ou ONGs..."
+                className="w-full"
+              />
             </FormControl>
             <FormMessage />
           </FormItem>
