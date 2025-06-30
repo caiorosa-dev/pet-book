@@ -53,3 +53,28 @@ export async function dislikePost(postId: string, userId: string) {
 
   return { disliked: true, message: 'Like removido com sucesso.' }
 }
+
+export async function addComment(
+  content: string,
+  postId: string,
+  authorId: string,
+) {
+  // Cria o comentario no post
+  try {
+    await prisma.comment.create({
+      data: {
+        content,
+        postId,
+        authorId,
+      },
+    })
+
+    return true
+  } catch (error) {
+    if (error instanceof Error) {
+      console.log('Erro ao comentar no post: ' + error)
+    }
+    console.log('Erro ao comentar no post')
+    return false
+  }
+}
