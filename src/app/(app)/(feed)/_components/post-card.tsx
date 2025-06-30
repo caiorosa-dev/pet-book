@@ -1,6 +1,7 @@
 import { format } from 'date-fns'
 import { Bone, Dog } from 'lucide-react'
 import Image from 'next/image'
+import Link from 'next/link'
 
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
 import { capitalizeString } from '@/helpers/capitalize'
@@ -110,11 +111,17 @@ export default async function PostCard({ post, currentUserId }: PostCardProps) {
   return (
     <div className="w-full bg-white rounded-xl overflow-hidden border border-gray-100 shadow-sm">
       <PostHeader post={post} />
-      <PostImage post={post} />
 
-      <div className="p-4">
-        <PostContent post={post} />
-        <PostDescription description={post.petDescription} />
+      <Link href={`/post/${post.id}`} className="block cursor-pointer">
+        <PostImage post={post} />
+
+        <div className="p-4">
+          <PostContent post={post} />
+          <PostDescription description={post.petDescription} />
+        </div>
+      </Link>
+
+      <div className="px-4 pb-4">
         <PostActions post={post} currentUserid={currentUserId} />
       </div>
     </div>

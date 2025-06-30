@@ -8,6 +8,7 @@ import PostCard from './post-card'
 
 interface FeedProps {
   posts: PostWithRelations[]
+  currentUserId: string
   title?: string
   stats?: {
     total: number
@@ -26,6 +27,7 @@ interface FeedProps {
 
 export default function Feed({
   posts,
+  currentUserId,
   title = 'Feed',
   stats,
   showCreateButton = true,
@@ -69,7 +71,7 @@ export default function Feed({
       {posts.length > 0 ? (
         <div className="flex flex-col gap-4 w-full">
           {posts.map((post) => (
-            <PostCard key={post.id} post={post} />
+            <PostCard key={post.id} post={post} currentUserId={currentUserId} />
           ))}
         </div>
       ) : (

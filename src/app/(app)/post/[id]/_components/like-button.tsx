@@ -10,14 +10,14 @@ import { dislikePost, likePost } from '../actions'
 
 export function LikeButton({
   post,
-  currentUserid,
+  currentUserId,
 }: {
   post: PostWithRelations
-  currentUserid: string
+  currentUserId: string
 }) {
   const [likesCount, setLikesCount] = useState(post.likes.length)
   const [hasLiked, setHasLiked] = useState(() =>
-    post.likes.some((like) => like.userId === currentUserid),
+    post.likes.some((like) => like.userId === currentUserId),
   )
   const [isLiking, setIsLiking] = useState(false)
 
@@ -27,13 +27,13 @@ export function LikeButton({
 
     try {
       if (hasLiked) {
-        const res = await dislikePost(post.id, currentUserid)
+        const res = await dislikePost(post.id, currentUserId)
         if (res.disliked) {
           setLikesCount((prev) => Math.max(prev - 1, 0))
           setHasLiked(false)
         }
       } else {
-        const res = await likePost(post.id, currentUserid)
+        const res = await likePost(post.id, currentUserId)
         if (res.liked) {
           setLikesCount((prev) => prev + 1)
           setHasLiked(true)
@@ -49,8 +49,7 @@ export function LikeButton({
   return (
     <Button variant="ghost" size="sm" onClick={handleLike} disabled={isLiking}>
       <PawPrint
-        className={`size-5 transition-colors ${hasLiked ? 'text-primary' : 'text-gray-600'}`}
-        fill={hasLiked ? 'currentColor' : 'none'}
+        className={`size-5 ${hasLiked ? 'text-primary fill-current' : ''}`}
       />
       <span className="text-sm">{likesCount}</span>
     </Button>

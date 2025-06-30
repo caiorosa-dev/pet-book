@@ -37,11 +37,13 @@ interface SearchResultsProps {
       }
     }>
   }
+  currentUserId: string
   isLoading?: boolean
 }
 
 export default function SearchResults({
   results,
+  currentUserId,
   isLoading,
 }: SearchResultsProps) {
   const [activeTab, setActiveTab] = useState('posts')
@@ -109,7 +111,11 @@ export default function SearchResults({
         {results.posts.length > 0 ? (
           <div className="space-y-4">
             {results.posts.map((post) => (
-              <PostCard key={post.id} post={post} />
+              <PostCard
+                key={post.id}
+                post={post}
+                currentUserId={currentUserId}
+              />
             ))}
           </div>
         ) : (

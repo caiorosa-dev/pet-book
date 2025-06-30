@@ -36,6 +36,7 @@ export default async function AppPage() {
     <Container>
       <Feed
         posts={posts}
+        currentUserId={session.user.id}
         title="Feed da Comunidade"
         stats={stats}
         showCreateButton={true}
