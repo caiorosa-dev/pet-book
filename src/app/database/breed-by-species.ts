@@ -41,7 +41,6 @@ export const breedBySpecies: Record<
     { label: 'Rhodesian Ridgeback', value: 'rhodesian ridgeback' },
     { label: 'Akita', value: 'akita' },
     { label: 'Shiba Inu', value: 'shiba inu' },
-    { label: 'Chow Chow', value: 'chow chow' },
     { label: 'Shar Pei', value: 'shar pei' },
     { label: 'Pequinês', value: 'pequines' },
     { label: 'Lhasa Apso', value: 'lhasa apso' },
