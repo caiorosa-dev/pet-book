@@ -107,7 +107,7 @@ function PostDescription({ description }: { description: string }) {
   )
 }
 
-export default async function PostCard({ post, currentUserId }: PostCardProps) {
+export default function PostCard({ post, currentUserId }: PostCardProps) {
   return (
     <div className="w-full bg-white rounded-xl overflow-hidden border border-gray-100 shadow-sm">
       <PostHeader post={post} />
