@@ -1,12 +1,13 @@
 'use client'
 
-import { AtSignIcon, PhoneIcon, UserIcon } from 'lucide-react'
+import { ArrowRightIcon, AtSignIcon, UserIcon } from 'lucide-react'
 import Link from 'next/link'
 import { useRouter } from 'next/navigation'
 import { useEffect } from 'react'
+import { toast } from 'sonner'
 import { z } from 'zod'
 
-import { Button } from '@/components/ui/button'
+import { Button, ButtonIcon } from '@/components/ui/button'
 import {
   Form,
   FormControl,
@@ -17,6 +18,7 @@ import {
 } from '@/components/ui/form'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
+import { PhoneInput } from '@/components/ui/phone-input'
 import { useClientForm } from '@/hooks/use-client-form'
 import { useRegisterStore } from '@/lib/register-store'
 
@@ -39,8 +41,14 @@ export default function RegisterPage() {
     },
     handler: async (values) => {
       setStep1Data(values)
-      router.push('/register/finish')
+
       return { success: true }
+    },
+    onSubmitSuccess: () => {
+      router.push('/register/finish')
+    },
+    onSubmitError: (error) => {
+      toast.error(error.message)
     },
   })
 
@@ -116,12 +124,11 @@ export default function RegisterPage() {
                 <FormItem>
                   <FormLabel>Seu telefone</FormLabel>
                   <FormControl>
-                    <Input
+                    <PhoneInput
                       {...field}
                       type="tel"
                       autoComplete="tel"
-                      placeholder="(48) 12345-6789"
-                      icon={PhoneIcon}
+                      placeholder="+55 (48) 12345-6789"
                     />
                   </FormControl>
                   <FormMessage />
@@ -131,9 +138,11 @@ export default function RegisterPage() {
             <Button
               type="submit"
               className="w-full"
+              size="rounded"
               disabled={form.isSubmitting}
             >
               {form.isSubmitting ? 'Avançando...' : 'Próximo'}
+              <ButtonIcon icon={ArrowRightIcon} isLoading={form.isSubmitting} />
             </Button>
           </div>
           {form.error && (

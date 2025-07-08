@@ -5,6 +5,7 @@ import { Inter } from 'next/font/google'
 import NextTopLoader from 'nextjs-toploader'
 
 import { LaunchScreen } from '@/components/misc/launch-screen'
+import { Toaster } from '@/components/ui/sonner'
 
 const interFont = Inter({
   variable: '--font-inter',
@@ -26,6 +27,7 @@ export default function RootLayout({
       <body className={`${interFont.variable} antialiased`}>
         <LaunchScreen />
         <NextTopLoader color="#0d9488" />
+        <Toaster richColors position="top-center" />
         {children}
       </body>
     </html>

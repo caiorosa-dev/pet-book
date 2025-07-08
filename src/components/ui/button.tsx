@@ -1,5 +1,6 @@
 import { Slot } from '@radix-ui/react-slot'
 import { cva, type VariantProps } from 'class-variance-authority'
+import { Loader2, LucideIcon } from 'lucide-react'
 import * as React from 'react'
 
 import { cn } from '@/lib/utils'
@@ -55,4 +56,20 @@ const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
 )
 Button.displayName = 'Button'
 
-export { Button, buttonVariants }
+function ButtonIcon({
+  icon: Icon,
+  className,
+  isLoading,
+}: {
+  icon: LucideIcon
+  isLoading?: boolean
+  className?: string
+}) {
+  if (isLoading) {
+    return <Loader2 className="size-4 animate-spin" />
+  }
+
+  return <Icon className={cn('size-4', className)} />
+}
+
+export { Button, ButtonIcon, buttonVariants }

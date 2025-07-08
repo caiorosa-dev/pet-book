@@ -1,9 +1,8 @@
-import { Container } from "@/components/layout/container";
-import ProfileHeader from "./_components/profile-header";
-import PetComponent from "./_components/pet-component";
-import PetsList from "./_components/pets-list";
-import { FullScreenPage } from "@/components/layout/full-screen-page";
-import PostsList from "./_components/posts-list";
+import { Container } from '@/components/layout/container'
+
+import PetsList from './_components/pets-list'
+import PostsList from './_components/posts-list'
+import ProfileHeader from './_components/profile-header'
 
 export default function ProfilePage() {
   return (
@@ -12,5 +11,5 @@ export default function ProfilePage() {
       <PetsList />
       <PostsList />
     </Container>
-  );
+  )
 }

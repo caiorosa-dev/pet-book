@@ -1,13 +1,13 @@
 'use client'
 
-import { AtSignIcon, LockIcon } from 'lucide-react'
+import { ArrowRightIcon, AtSignIcon, LockIcon } from 'lucide-react'
 import Link from 'next/link'
 import { useRouter } from 'next/navigation'
 import { useEffect } from 'react'
 import { toast } from 'sonner'
 import { z } from 'zod'
 
-import { Button } from '@/components/ui/button'
+import { Button, ButtonIcon } from '@/components/ui/button'
 import {
   Form,
   FormControl,
@@ -52,11 +52,23 @@ export default function RegisterFinishPage() {
     },
     handler: async (values) => {
       setStep2Data(values)
-      await authClient.signUp.email({
+
+      const result = await authClient.signUp.email({
         name,
         username,
         phone,
         ...values,
+      })
+
+      if (result.error) {
+        toast.error(result.error.message)
+        throw new Error(result.error.message)
+      }
+
+      await authClient.signIn.email({
+        email: values.email,
+        password: values.password,
+        callbackURL: '/register/welcome',
       })
     },
     onSubmitSuccess: () => {
@@ -137,21 +149,27 @@ export default function RegisterFinishPage() {
                 </FormItem>
               )}
             />
-            <div className="flex space-x-4">
+            <div className="space-y-4">
+              <Button
+                type="submit"
+                className="w-full"
+                disabled={form.isSubmitting}
+                size="rounded"
+              >
+                {form.isSubmitting ? 'Criando conta...' : 'Criar conta'}
+                <ButtonIcon
+                  icon={ArrowRightIcon}
+                  isLoading={form.isSubmitting}
+                />
+              </Button>
               <Button
                 type="button"
                 onClick={() => router.push('/register')}
                 className="w-full"
                 variant="outline"
+                size="rounded"
               >
                 Voltar
-              </Button>
-              <Button
-                type="submit"
-                className="w-full"
-                disabled={form.isSubmitting}
-              >
-                {form.isSubmitting ? 'Criando conta...' : 'Criar conta'}
               </Button>
             </div>
           </div>

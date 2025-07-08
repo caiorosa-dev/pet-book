@@ -2,17 +2,18 @@ import { MapPin, Radar } from 'lucide-react'
 import Image from 'next/image'
 import Link from 'next/link'
 
-import { Button } from '@/components/ui/button'
+import { Button, ButtonIcon } from '@/components/ui/button'
 import { Card, CardContent, CardFooter } from '@/components/ui/card'
 
 export default function CreatePostPage() {
   return (
     <>
-      <div className="max-w-xl w-full mx-auto h-full flex flex-col gap-10">
+      <div className="max-w-xl w-full mx-auto h-full flex flex-col gap-10 items-center">
         <h1 className="text-3xl font-bold text-center">Novo conteúdo</h1>
         <p className="text-center text-secondary-foreground">
-          Informe as informações de seu pet para começar a posta com ele
+          Informe as informações de seu pet para começar a postar com ele.
         </p>
+
         <Card className="items-center">
           <CardContent>
             <Image
@@ -24,12 +25,15 @@ export default function CreatePostPage() {
             />
           </CardContent>
           <CardFooter>
-            <Button className="flex gap-2">
-              <MapPin />
-              <Link href="post/found-pet">Encontrei um pet</Link>
-            </Button>
+            <Link href="/new-post/found-pet">
+              <Button>
+                <ButtonIcon icon={MapPin} />
+                Encontrei um pet
+              </Button>
+            </Link>
           </CardFooter>
         </Card>
+
         <Card className="items-center">
           <CardContent>
             <Image
@@ -41,10 +45,12 @@ export default function CreatePostPage() {
             />
           </CardContent>
           <CardFooter>
-            <Button className="flex gap-2">
-              <Radar />
-              <Link href="post/lost-pet">Perdi meu pet</Link>
-            </Button>
+            <Link href="/new-post/lost-pet">
+              <Button>
+                <ButtonIcon icon={Radar} />
+                Perdi meu pet
+              </Button>
+            </Link>
           </CardFooter>
         </Card>
       </div>

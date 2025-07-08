@@ -18,23 +18,37 @@ type MobileNavProps = {
 type MobileNavLinkProps = {
   href: string
   exact?: boolean
+  disabled?: boolean
   icon: React.ElementType
 }
 
-function MobileNavLink({ href, icon: Icon, exact }: MobileNavLinkProps) {
+function MobileNavLink({
+  href,
+  icon: Icon,
+  exact,
+  disabled,
+}: MobileNavLinkProps) {
   const pathname = usePathname()
 
   const isActive = exact ? pathname === href : pathname.startsWith(href)
+
+  if (disabled) {
+    return (
+      <div className="rounded-full size-12 flex justify-center items-center opacity-50">
+        <Icon className="h-5 w-5" />
+      </div>
+    )
+  }
 
   return (
     <Link
       href={href}
       className={cn(
         'group rounded-full size-12 flex justify-center items-center hover:bg-secondary',
-        isActive ? 'text-primary' : 'text-muted  cursor-pointer',
+        isActive ? 'text-primary' : 'text-muted cursor-pointer',
       )}
     >
-      <Icon className={`h-5 w-5`} />
+      <Icon className="h-5 w-5" />
     </Link>
   )
 }
@@ -74,7 +88,7 @@ export function MobileNav({ className, user }: MobileNavProps) {
         <MobileNavLink href="/" icon={Home} exact />
         <MobileNavLink href="/search" icon={SearchIcon} />
         <MobileNavLink href="/new-post" icon={PlusCircleIcon} />
-        <MobileNavLink href="/orgs" icon={GlobeIcon} />
+        <MobileNavLink href="/orgs" icon={GlobeIcon} disabled />
         <UserImage user={user} />
       </ul>
     </nav>
